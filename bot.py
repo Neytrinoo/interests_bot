@@ -1,5 +1,5 @@
 from telegram.ext import Updater, MessageHandler, Filters, CommandHandler, ConversationHandler
-# from telegram import ReplyKeyboardMarkup
+from telegram import ReplyKeyboardMarkup
 
 
 def main():
@@ -7,15 +7,15 @@ def main():
     dp = updater.dispatcher
     dp.add_handler(CommandHandler('help', help))
     dp.add_handler(CommandHandler('stop', stop))
+    dp.add_handler(CommandHandler("profile", start_sex))
+    # dp.add_handler(CommandHandler('start', start_sex))
     # dp.add_handler(CommandHandler('', ))
     # dp.add_handler(CommandHandler('', ))
     # dp.add_handler(CommandHandler('', ))
-    # dp.add_handler(CommandHandler('', ))
-    # reply_keyboard = [[''],
-    #                   ['']]
-    # markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
-    # updater.start_polling()
-    # updater.idle()
+    reply_keyboard = ['/help', '/profile']
+    markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
+    updater.start_polling()
+    updater.idle()
 
 
 def help(bot, update):
@@ -24,13 +24,13 @@ def help(bot, update):
     )
 
 
-def start_sex(bot, update, user_data):
+def start_sex(bot, update):
     update.message.reply_text(
         "Пройди опрос дибил!\n"
         "Это всего лишь данные для фбр, нато, навального и шывцова:\n"
-        "Твой пол, ембецил? (Трансгендеры в сделку не входили)"
-    )
-    return 1
+        "Твой пол, ембецил? (Трансгендеры в сделку не входили)",
+        reply_markup=markup)
+    return 2
 
 
 def first_name(bot, update, user_data):
@@ -38,7 +38,7 @@ def first_name(bot, update, user_data):
     update.message.reply_text(
         "Имя?"
     )
-    return 2
+    return 3
 
 
 def last_name(bot, update, user_data):
