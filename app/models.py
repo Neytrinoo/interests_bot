@@ -8,6 +8,7 @@ interests_table = db.Table('interests_user',
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    telegram_id = db.Column(db.Integer)
     name = db.Column(db.String(200))
     gender = db.Column(db.String(20))
     age = db.Column(db.Integer)
@@ -27,5 +28,5 @@ class Interests(db.Model):
 class Photo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     image = db.Column(db.LargeBinary)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) # Связь один-ко-многим с таблицей User
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # Связь один-ко-многим с таблицей User
     user = db.relationship('User', backref=db.backref('photos', lazy=True))
