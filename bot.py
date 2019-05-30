@@ -4,9 +4,9 @@ from telegram.ext import Updater, MessageHandler, Filters, CommandHandler, Conve
 
 def main():
     updater = Updater('797488097:AAFIilpcv61tuQ7kFDtZHZyuPpcE8KuSI88')
-    # dp = updater.dispatcher
-    # dp.add_handler(CommandHandler('', ))
-    # dp.add_handler(CommandHandler('', ))
+    dp = updater.dispatcher
+    dp.add_handler(CommandHandler('help', help))
+    dp.add_handler(CommandHandler('stop', stop))
     # dp.add_handler(CommandHandler('', ))
     # dp.add_handler(CommandHandler('', ))
     # dp.add_handler(CommandHandler('', ))
@@ -16,6 +16,12 @@ def main():
     # markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
     # updater.start_polling()
     # updater.idle()
+
+
+def help(bot, update):
+    update.message.reply_text(
+        "Ну ты и беспомощное хавно"
+    )
 
 
 def start_sex(bot, update, user_data):
