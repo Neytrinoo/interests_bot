@@ -1,4 +1,4 @@
-from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+from telebot import types
 import telebot
 
 
@@ -6,135 +6,168 @@ token = '797488097:AAFIilpcv61tuQ7kFDtZHZyuPpcE8KuSI88'
 
 bot = telebot.TeleBot(token)
 
-first_name = ""
-last_name = ""
-age = 0
-sex = ""
-interests = ""
-biography = ""
-about_partner = ""
-photo = ""
+users = {}
+
+# first_name
+# last_name
+# age
+# sex
+# interests
+# biography
+# about_partner
+# photos
 
 
 @bot.message_handler(commands=['help'])
 def help_for_helpless(message):
-    bot.reply_to(message, "<Полезная инструкция>")
+    bot.send_message(message.from_user.id, "<Полезная инструкция>")
 
 
 # Сделать кнопку регистрации на начальном экране
-@bot.message_handler(content_types=['text'])
+@bot.message_handler(commands=['reg'])
 def profile_start(message):
-    if message.text == '/reg':
-        bot.send_message(message.from_user.id, "Как тебя зовут?")
-        bot.register_next_step_handler(message, profile_get_name)
-    else:
-        bot.send_message(message.from_user.id, 'Напиши /reg')
+    bot.send_message(message.from_user.id, "Как тебя зовут?")
+    bot.register_next_step_handler(message, profile_get_name)
 
 
 @bot.message_handler(content_types=['text'])
 def profile_get_name(message):
-    global name
-    name = message.text
+    if message.text.isalpha() is False:
+        bot.send_message(message.from_user.id, 'Текстом, пожалуйста')
+        bot.register_next_step_handler(message, profile_get_name)
+        return
+    users[message.from_user.id] = {}
+    users[message.from_user.id]['first_name'] = message.text
+    print(users)
     bot.send_message(message.from_user.id, 'Какая у тебя фамилия?')
     bot.register_next_step_handler(message, profile_get_surname)
 
 
 @bot.message_handler(content_types=['text'])
 def profile_get_surname(message):
-    global surname
-    surname = message.text
-    bot.send_message(message.from_user.id, 'Сколько тебе лет?')
+    if message.text.isalpha() is False:
+        bot.send_message(message.from_user.id, 'Текстом, пожалуйста')
+        bot.register_next_step_handler(message, profile_get_surname)
+        return
+    users[message.from_user.id]['last_name'] = message.text
+    print(users)
+    bot.send_message(message.from_user.id, 'Сколько вам лет?')
     bot.register_next_step_handler(message, profile_get_age)
 
 
+@bot.message_handler(content_types=['text'])
 def profile_get_age(message):
-    global age
     try:
-        age = int(message.text)
+        users[message.from_user.id]['age'] = int(message.text)
+        print(users)
     except ValueError:
         bot.send_message(message.from_user.id, 'Цифрами, пожалуйста')
         bot.register_next_step_handler(message, profile_get_age)
         return
 
     # <buttons>
-    keyboard = InlineKeyboardMarkup()
-    keyboard.row_width = 2
-    keyboard.add(InlineKeyboardButton("Мужской", callback_data="male"),
-                 InlineKeyboardButton("Женский", callback_data="female"))
-    bot.send_message(message.from_user.id, text="Какой у вас пол?", reply_markup=keyboard)
+    keyboard = types.ReplyKeyboardMarkup(row_width=2)
+    keyboard.add(types.KeyboardButton('Мужской'), types.KeyboardButton('Женский'))
+    bot.send_message(message.from_user.id, "Какой у вас пол?", reply_markup=keyboard)
+    types.ReplyKeyboardRemove(selective=False)
     # </buttons>
 
     bot.register_next_step_handler(message, profile_get_sex)
 
 
-# Обработчик для выбора пола
-@bot.callback_query_handler(func=lambda call: True)
-def callback_worker(call):
-    global sex
-    if call.data == "male":
-        sex = "male"
-    elif call.data == "female":
-        sex = "female"
+# Старый обработчик для выбора пола
+# @bot.message_handler(func=lambda message: True, content_types=['text'])
+# def callback_worker(message):
+#     btn_sex = message.text
+#     if btn_sex == "Мужской":
+#         active_sex = "Мужской"
+#         users[message.from_user.id]['sex'] = active_sex
+#     elif btn_sex == "Женский":
+#         active_sex = "female"
+#         users[message.from_user.id]['sex'] = active_sex
+#     else:
+#         bot.send_message(message.from_user.id, 'Ошибка, введите верные данные')
+#         bot.register_next_step_handler(message, callback_worker)
+#         return callback_worker
+#
+#     print(users)
+#     bot.register_next_step_handler(message, profile_get_sex)
 
 
-# Переделать под кнопки Муж/Жен
+# Имеется встроенный обработчик для выбора пола
+@bot.message_handler(func=lambda message: True, content_types=['text'])
 def profile_get_sex(message):
-    bot.send_message(message.from_user.id, 'Ваши интересы? (Через запятую)')
+    btn_sex = message.text
+    if btn_sex == "Мужской":
+        active_sex = "Мужской"
+        users[message.from_user.id]['sex'] = active_sex
+    elif btn_sex == "Женский":
+        active_sex = "Женский"
+        users[message.from_user.id]['sex'] = active_sex
+    else:
+        bot.send_message(message.from_user.id, 'Ошибка, введите верные данные. Какой у вас пол?')
+        bot.register_next_step_handler(message, profile_get_sex)
+        return profile_get_sex
+
+    print(users)
+    keyboard_hider = types.ReplyKeyboardRemove()
+    bot.send_message(message.from_user.id, 'Ваши интересы? (Через запятую)', reply_markup=keyboard_hider)
     bot.register_next_step_handler(message, profile_get_interests)
 
 
 @bot.message_handler(content_types=['text'])
 def profile_get_interests(message):
-    global interests
-    interests = message.text
+    users[message.from_user.id]['interests'] = message.text
+    print(users)
     bot.send_message(message.from_user.id, 'Ваша биография?')
     bot.register_next_step_handler(message, profile_get_biography)
 
 
 @bot.message_handler(content_types=['text'])
 def profile_get_biography(message):
-    global biography
-    biography = message.text
+    users[message.from_user.id]['biography'] = message.text
+    print(users)
     bot.send_message(message.from_user.id, 'Расскажите о желаемом партнёре?')
     bot.register_next_step_handler(message, profile_get_about_partner)
 
 
 @bot.message_handler(content_types=['text'])
 def profile_get_about_partner(message):
-    global about_partner
-    about_partner = message.text
+    users[message.from_user.id]['about_partner'] = message.text
+    print(users)
     bot.send_message(message.from_user.id, 'Ваши фотографии? (Максимум 4)')
-    bot.register_next_step_handler(message, profile_get_photo)
+    bot.register_next_step_handler(message, profile_get_photos)
 
 
-# Переделать под формат фотографий
-# Ещё не знаю работает или нет :D
 @bot.message_handler(content_types=['photo'])
-def profile_get_photo(message):
+def profile_get_photos(message):
     try:
-        for mes in message:
-            if mes < 4:
-                print('good')
-            else:
-                print('bad')
         file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
-        downloaded_file = 'https://api.telegram.org/file/bot{0}/{1}'.format(token, file_info.file_path)
+        downloaded_files = bot.download_file(file_info.file_path)
 
-        bot.reply_to(message, "Данные добавлены")
+        #     # users[message.from_user.id]['photo'] = [downloaded_files]
+        #     # print(users)
+        #
+        #     # for file in downloaded_files:
+        #     #     files = [].append(file)
+        #
+        #     files = [file for file in downloaded_files]
+        #
+        #     users[message.from_user.id]['photos'] = files
+        #
+        #     f = open('text.txt', 'w')
+        #
+        #     f.write(str(downloaded_files))
+        #
+        #     f.close()
 
-        # Дим Димыч, используй эту переменную для api
-        print(downloaded_file)
+        users[message.from_user.id]['photos'] = downloaded_files
 
-        # <test>
-        # bot.send_message(message.from_user.id, "Спасибо! Теперь вы можете искать себе партнёра")
-        # bot.send_message(message.from_user.id, 'Тебе ' + str(age) + ' лет, тебя зовут ' +
-        #                  name + ' ' + surname + '?' + sex)
-        # </test>
+        print(users)
 
     except Exception as e:
         print(e)
-        bot.send_message(message.from_user.id, 'Не поддерживаемый формат \n Ваши фотографии? (Максимум 4)')
-        return
+        bot.send_message(message.from_user.id, 'Пожалуйста отправьте фото нужного формата')
 
 
 if __name__ == "__main__":
