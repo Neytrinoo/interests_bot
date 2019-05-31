@@ -2,6 +2,7 @@ from flask_restful import reqparse, abort, Api, Resource
 from app import app, db
 from app.models import User, Interests, Photo
 from flask import jsonify
+import werkzeug
 
 api = Api(app)
 
@@ -13,6 +14,11 @@ def type_error(field, type_field):
 def abort_if_user_not_found(id):
     if User.query.filter_by(telegram_id=id).first() is None:
         abort(404, message="User {} not found".format(id))
+
+
+def abort_if_user_found(id):
+    if User.query.filter_by(telegram_id=id).first() is not None:
+        abort(404, message="User {} already exist".format(id))
 
 
 class UserApi(Resource):
@@ -44,14 +50,13 @@ class UserApi(Resource):
         args = self.parser.parse_args()
         try:
             user = User.query.filter_by(telegram_id=user_id).first()
-
-            if 'name' in args:
+            if args['name'] is not None:
                 if len(args['name']) > 200:
                     return jsonify({'error': 'Max length of name is 200 symbols'})
                 user.name = args['name']
-                return jsonify({'success': 'OK'})
+                db.session.commit()
 
-            if 'gender' in args:
+            if args['gender'] is not None:
                 try:
                     genderr = str(args['gender'])
                     if genderr not in ['male', 'female']:
@@ -59,15 +64,17 @@ class UserApi(Resource):
                 except Exception as e:
                     return jsonify(type_error('gender', str(type(args['gender']))))
                 user.gender = genderr
+                db.session.commit()
 
-            if 'age' in args:
+            if args['age'] is not None:
                 try:
                     agee = int(args['age'])
                 except Exception as e:
                     return jsonify({'error': 'Age can only contain numbers'})
                 user.age = agee
+                db.session.commit()
 
-            if 'interests' in args:
+            if args['interests'] is not None:
                 try:
                     user.interests = []
                     db.session.commit()
@@ -85,7 +92,7 @@ class UserApi(Resource):
                 except Exception as e:
                     return jsonify({'error': 'An error occurred'})
 
-            if 'about_me' in args:
+            if args['about_me'] is not None:
                 try:
                     about_mee = str(args['about_me'])
                     if len(about_mee) > 1000:
@@ -93,8 +100,9 @@ class UserApi(Resource):
                 except Exception as e:
                     return jsonify(type_error('about_me', str(type(args['about_me']))))
                 user.about_me = about_mee
+                db.session.commit()
 
-            if 'about_you' in args:
+            if args['about_you'] is not None:
                 # Проверка информации о собеседнике
                 try:
                     about_youu = str(args['about_you'])
@@ -103,6 +111,8 @@ class UserApi(Resource):
                 except Exception as e:
                     return jsonify(type_error('about_you', str(type(args['about_you']))))
                 user.about_you = about_youu
+                db.session.commit()
+            return jsonify({'success': 'Ok'})
         except Exception as e:
             return jsonify({'error': 'An error occurred'})
 
@@ -116,10 +126,13 @@ class UserListApi(Resource):
     parser.add_argument('about_me', required=True)
     parser.add_argument('about_you', required=True)
     parser.add_argument('telegram_id', required=True)
+    parser.add_argument('photos', type=werkzeug.datastructures.FileStorage, location='files')
 
     def post(self):
         args = self.parser.parse_args()
         # Проверка имени пользователя
+        print(args['photos'])
+        abort_if_user_found(args['telegram_id'])
         try:
             name = str(args['name'])
             if len(name) > 200:
@@ -173,13 +186,14 @@ class UserListApi(Resource):
                 if Interests.query.filter_by(text=interestss[i]).first() is None:
                     db.session.add(Interests(text=interestss[i]))
                     db.session.commit()
-                if Interests.query.filter_by(text=interestss).first() not in user.interests:
+                if Interests.query.filter_by(text=interestss[i]).first() not in user.interests:
                     user.interests.append(Interests.query.filter_by(text=interestss[i]).first())
-            db.session.commit()
+                db.session.commit()
         except Exception as e:
             return jsonify({'error': 'An error occurred'})
         db.session.add(user)
         db.session.commit()
+        return jsonify({'success': 'Ok'})
 
 
 api.add_resource(UserApi, '/api/users/<int:user_id>')
