@@ -31,6 +31,7 @@ def profile_start(message):
         bot.send_message(message.from_user.id, 'Напиши /reg')
 
 
+@bot.message_handler(content_types=['text'])
 def profile_get_name(message):
     global name
     name = message.text
@@ -38,6 +39,7 @@ def profile_get_name(message):
     bot.register_next_step_handler(message, profile_get_surname)
 
 
+@bot.message_handler(content_types=['text'])
 def profile_get_surname(message):
     global surname
     surname = message.text
@@ -47,11 +49,12 @@ def profile_get_surname(message):
 
 def profile_get_age(message):
     global age
-    while age == 0:
-        try:
-            age = int(message.text)
-        except ValueError:
-            bot.send_message(message.from_user.id, 'Цифрами, пожалуйста')
+    try:
+        age = int(message.text)
+    except ValueError:
+        bot.send_message(message.from_user.id, 'Цифрами, пожалуйста')
+        bot.register_next_step_handler(message, profile_get_age)
+        return
 
     # <buttons>
     keyboard = InlineKeyboardMarkup()
@@ -80,6 +83,7 @@ def profile_get_sex(message):
     bot.register_next_step_handler(message, profile_get_interests)
 
 
+@bot.message_handler(content_types=['text'])
 def profile_get_interests(message):
     global interests
     interests = message.text
@@ -87,6 +91,7 @@ def profile_get_interests(message):
     bot.register_next_step_handler(message, profile_get_biography)
 
 
+@bot.message_handler(content_types=['text'])
 def profile_get_biography(message):
     global biography
     biography = message.text
@@ -94,6 +99,7 @@ def profile_get_biography(message):
     bot.register_next_step_handler(message, profile_get_about_partner)
 
 
+@bot.message_handler(content_types=['text'])
 def profile_get_about_partner(message):
     global about_partner
     about_partner = message.text
@@ -106,23 +112,29 @@ def profile_get_about_partner(message):
 @bot.message_handler(content_types=['photo'])
 def profile_get_photo(message):
     try:
-
+        for mes in message:
+            if mes < 4:
+                print('good')
+            else:
+                print('bad')
         file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
-        downloaded_file = bot.download_file(file_info.file_path)
+        downloaded_file = 'https://api.telegram.org/file/bot{0}/{1}'.format(token, file_info.file_path)
 
-        src = '/photo' + file_info.file_path
-        with open(src, 'wb') as new_file:
-            new_file.write(downloaded_file)
-        bot.reply_to(message, "Фото добавлено")
+        bot.reply_to(message, "Данные добавлены")
+
+        # Дим Димыч, используй эту переменную для api
+        print(downloaded_file)
 
         # <test>
-        bot.send_message(message.from_user.id, "Спасибо! Теперь вы можете искать себе партнёра")
-        bot.send_message(message.from_user.id, 'Тебе ' + str(age) + ' лет, тебя зовут ' +
-                         name + ' ' + surname + '?' + sex)
+        # bot.send_message(message.from_user.id, "Спасибо! Теперь вы можете искать себе партнёра")
+        # bot.send_message(message.from_user.id, 'Тебе ' + str(age) + ' лет, тебя зовут ' +
+        #                  name + ' ' + surname + '?' + sex)
         # </test>
 
     except Exception as e:
-        bot.reply_to(message, e)
+        print(e)
+        bot.send_message(message.from_user.id, 'Не поддерживаемый формат \n Ваши фотографии? (Максимум 4)')
+        return
 
 
 if __name__ == "__main__":
