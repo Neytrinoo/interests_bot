@@ -44,7 +44,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -56,6 +55,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -170,11 +170,13 @@
       <workItem from="1559296601470" duration="1981000" />
       <workItem from="1559298653416" duration="22671000" />
       <workItem from="1559325216627" duration="299000" />
+      <workItem from="1559386591872" duration="12311000" />
+      <workItem from="1559407489374" duration="38000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="49730000" />
+    <option name="totallyTimeSpent" value="62079000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1040" height="744" extended-state="6" />
@@ -184,7 +186,7 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.284041" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.29868227" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -209,7 +211,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/interests_bot$newbot.coverage" NAME="newbot Coverage Results" MODIFIED="1559238899135" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/.." />
-    <SUITE FILE_PATH="coverage/interests_bot$newbot__1_.coverage" NAME="newbot (1) Coverage Results" MODIFIED="1559325243640" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/interests_bot$newbot__1_.coverage" NAME="newbot (1) Coverage Results" MODIFIED="1559400669947" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Bot$bot.coverage" NAME="bot Coverage Results" MODIFIED="1559214914845" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/interests_bot$bot.coverage" NAME="bot Coverage Results" MODIFIED="1559234024581" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
@@ -229,13 +231,7 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/../newbot.py" />
-    <entry file="file://D:/Загрузки/bot.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="927">
-          <caret line="121" column="7" lean-forward="true" selection-start-line="121" selection-start-column="7" selection-end-line="121" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://D:/Загрузки/bot.py" />
     <entry file="file://$PROJECT_DIR$/text.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -248,11 +244,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/newbot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="519">
-          <caret line="174" lean-forward="true" selection-start-line="174" selection-end-line="174" />
+        <state relative-caret-position="298">
+          <caret line="176" selection-start-line="176" selection-end-line="176" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
-            <marker date="1559324699976" expanded="true" signature="2354:2926" ph="..." />
+            <marker date="1559407527204" expanded="true" signature="1379:2076" ph="..." />
+            <marker date="1559407527204" expanded="true" signature="3061:3633" ph="..." />
+            <marker date="1559407527204" expanded="true" signature="6623:6650" ph="..." />
           </folding>
         </state>
       </provider>
