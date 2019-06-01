@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6f9fef1c-aebf-40a1-b823-5346385fa139" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/Bot.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Bot.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/newbot.py" beforeDir="false" afterPath="$PROJECT_DIR$/newbot.py" afterDir="false" />
     </list>
@@ -12,7 +14,20 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/newbot.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="875">
+              <caret line="191" column="23" lean-forward="true" selection-start-line="191" selection-start-column="23" selection-end-line="191" selection-end-column="23" />
+              <folding>
+                <element signature="e#0#25#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -34,10 +49,10 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-9" />
-    <option name="y" value="8" />
-    <option name="width" value="1040" />
-    <option name="height" value="744" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -48,8 +63,8 @@
         <subPane>
           <expand>
             <path>
-              <item name="interests_bot" type="b2602c69:ProjectViewProjectNode" />
-              <item name="interests_bot" type="462c0819:PsiDirectoryNode" />
+              <item name="telegram_bot_project" type="b2602c69:ProjectViewProjectNode" />
+              <item name="telegram_bot_project" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -172,16 +187,18 @@
       <workItem from="1559325216627" duration="299000" />
       <workItem from="1559386591872" duration="12311000" />
       <workItem from="1559407489374" duration="38000" />
+      <workItem from="1559408207720" duration="141000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="62079000" />
+    <option name="totallyTimeSpent" value="62220000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1040" height="744" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25266525" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -217,9 +234,7 @@
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/../Django/Телеграм Я.Лицей/MyBot.py" />
-    <entry file="file://$PROJECT_DIR$/../Телеграм Я.Лицей/MyBot.py">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/../Телеграм Я.Лицей/MyBot.py" />
     <entry file="file://$PROJECT_DIR$/bot.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="323">
@@ -235,22 +250,13 @@
     <entry file="file://$PROJECT_DIR$/text.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://C:/Program Files (x86)/Python37-32/Lib/site-packages/telebot/apihelper.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="79">
-          <caret line="74" selection-start-line="74" selection-end-line="74" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://C:/Program Files (x86)/Python37-32/Lib/site-packages/telebot/apihelper.py" />
     <entry file="file://$PROJECT_DIR$/newbot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="298">
-          <caret line="176" selection-start-line="176" selection-end-line="176" />
+        <state relative-caret-position="875">
+          <caret line="191" column="23" lean-forward="true" selection-start-line="191" selection-start-column="23" selection-end-line="191" selection-end-column="23" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
-            <marker date="1559407527204" expanded="true" signature="1379:2076" ph="..." />
-            <marker date="1559407527204" expanded="true" signature="3061:3633" ph="..." />
-            <marker date="1559407527204" expanded="true" signature="6623:6650" ph="..." />
           </folding>
         </state>
       </provider>
