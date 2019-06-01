@@ -4,12 +4,7 @@
     <bookmark url="file://$PROJECT_DIR$/../SecondYearYandexLyceum/Alica project/flask_app.py" description="sessionStorage[user_id]['map_image_with_all_excurs..." line="729" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="630db3de-7312-459a-8b57-f1d49d9837bb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.db" beforeDir="false" afterPath="$PROJECT_DIR$/app.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/api tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api tests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api.py" afterDir="false" />
-    </list>
+    <list default="true" id="630db3de-7312-459a-8b57-f1d49d9837bb" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,8 +88,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/api.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="320">
-              <caret line="161" column="37" lean-forward="true" selection-start-line="161" selection-start-column="37" selection-end-line="161" selection-end-column="37" />
+            <state relative-caret-position="558">
+              <caret line="190" column="12" lean-forward="true" selection-start-line="190" selection-start-column="12" selection-end-line="190" selection-end-column="12" />
               <folding>
                 <element signature="e#0#56#0" expanded="true" />
                 <marker date="1559395314211" expanded="true" signature="3637:3639" ph="..." />
@@ -106,20 +101,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/api tests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
-              <caret line="20" column="58" selection-start-line="20" selection-start-column="58" selection-end-line="20" selection-end-column="58" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="450">
-              <caret line="112" column="64" selection-start-line="112" selection-start-column="64" selection-end-line="112" selection-end-column="64" />
-              <folding>
-                <element signature="e#0#68#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="306">
+              <caret line="18" column="111" lean-forward="true" selection-start-line="18" selection-start-column="111" selection-end-line="18" selection-end-column="111" />
             </state>
           </provider>
         </entry>
@@ -335,7 +318,7 @@
       <workItem from="1559207215351" duration="16623000" />
       <workItem from="1559291151763" duration="3605000" />
       <workItem from="1559299037703" duration="6189000" />
-      <workItem from="1559382877889" duration="5898000" />
+      <workItem from="1559382877889" duration="7723000" />
     </task>
     <servers />
   </component>
@@ -351,7 +334,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="32315000" />
+    <option name="totallyTimeSpent" value="34140000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -366,12 +349,12 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49837488" visible="true" weight="0.25746268" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49837488" visible="true" weight="0.25746268" />
       <window_info id="Structure" order="1" sideWeight="0.5016251" side_tool="true" weight="0.25799572" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32502708" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32502708" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -427,16 +410,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="112" column="64" selection-start-line="112" selection-start-column="64" selection-end-line="112" selection-end-column="64" />
-          <folding>
-            <element signature="e#0#68#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/views.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -454,17 +427,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="450">
+          <caret line="112" column="64" selection-start-line="112" selection-start-column="64" selection-end-line="112" selection-end-column="64" />
+          <folding>
+            <element signature="e#0#68#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/api tests.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="20" column="58" selection-start-line="20" selection-start-column="58" selection-end-line="20" selection-end-column="58" />
+        <state relative-caret-position="306">
+          <caret line="18" column="111" lean-forward="true" selection-start-line="18" selection-start-column="111" selection-end-line="18" selection-end-column="111" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/api.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="320">
-          <caret line="161" column="37" lean-forward="true" selection-start-line="161" selection-start-column="37" selection-end-line="161" selection-end-column="37" />
+        <state relative-caret-position="558">
+          <caret line="190" column="12" lean-forward="true" selection-start-line="190" selection-start-column="12" selection-end-line="190" selection-end-column="12" />
           <folding>
             <element signature="e#0#56#0" expanded="true" />
             <marker date="1559395314211" expanded="true" signature="3637:3639" ph="..." />
