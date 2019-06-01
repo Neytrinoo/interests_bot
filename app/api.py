@@ -1,10 +1,12 @@
 from flask_restful import reqparse, abort, Api, Resource
 from app import app, db
 from app.models import User, Interests, Photo
-from flask import jsonify
+from flask import jsonify, request
 import werkzeug
 
 api = Api(app)
+
+SECRET_PASSWORD = 'yEChQDWrLCXg3zQPvJeEuY25e3EOn0'
 
 
 def type_error(field, type_field):
@@ -14,6 +16,11 @@ def type_error(field, type_field):
 def abort_if_user_not_found(id):
     if User.query.filter_by(telegram_id=id).first() is None:
         abort(404, message="User {} not found".format(id))
+
+
+def abort_if_password_false(password):
+    if password != SECRET_PASSWORD:
+        abort(400, message='Access error')
 
 
 def abort_if_user_found(id):
@@ -31,6 +38,11 @@ class UserApi(Resource):
     parser.add_argument('about_you', required=False)
 
     def get(self, user_id):
+        # Не зная пароль никто не сможет получить данные пользователей
+        if 'password' not in request.headers:
+            abort(400, message='Access error')
+        abort_if_password_false(request.headers['password'])
+
         user_id = str(user_id)
         abort_if_user_not_found(user_id)
         user = User.query.filter_by(telegram_id=user_id).first()
@@ -45,11 +57,22 @@ class UserApi(Resource):
         return jsonify({'user': result})
 
     def put(self, user_id):
+        # Не зная пароль никто не сможет изменить данные пользователей
+        if 'password' not in request.headers:
+            abort(400, message='Access error')
+        abort_if_password_false(request.headers['password'])
+
         user_id = str(user_id)
-        abort_if_user_not_found(user_id)
         args = self.parser.parse_args()
+        abort_if_user_not_found(user_id)
+
+        user = User.query.filter_by(telegram_id=user_id).first()
+        if list(request.files):
+            photo = Photo(image=request.files['file'].read())
+            db.session.add(photo)
+            user.photos.append(photo)
+            db.session.commit()
         try:
-            user = User.query.filter_by(telegram_id=user_id).first()
             if args['name'] is not None:
                 if len(args['name']) > 200:
                     return jsonify({'error': 'Max length of name is 200 symbols'})
@@ -86,7 +109,7 @@ class UserApi(Resource):
                         if Interests.query.filter_by(text=interestss[i]).first() is None:
                             db.session.add(Interests(text=interestss[i]))
                             db.session.commit()
-                        if Interests.query.filter_by(text=interestss).first() not in user.interests:
+                        if Interests.query.filter_by(text=interestss[i]).first() not in user.interests:
                             user.interests.append(Interests.query.filter_by(text=interestss[i]).first())
                     db.session.commit()
                 except Exception as e:
@@ -126,13 +149,17 @@ class UserListApi(Resource):
     parser.add_argument('about_me', required=True)
     parser.add_argument('about_you', required=True)
     parser.add_argument('telegram_id', required=True)
-    parser.add_argument('photos', type=werkzeug.datastructures.FileStorage, location='files')
 
     def post(self):
+        # Не зная пароль, никто не сможет добавить пользователя
+        if 'password' not in request.headers:
+            abort(400, message='Access error')
+        abort_if_password_false(request.headers['password'])
+
         args = self.parser.parse_args()
-        # Проверка имени пользователя
-        print(args['photos'])
         abort_if_user_found(args['telegram_id'])
+
+        # Проверка имени пользователя
         try:
             name = str(args['name'])
             if len(name) > 200:
