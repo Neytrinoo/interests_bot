@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="6f9fef1c-aebf-40a1-b823-5346385fa139" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/newbot.py" beforeDir="false" afterPath="$PROJECT_DIR$/newbot.py" afterDir="false" />
-    </list>
+    <list default="true" id="6f9fef1c-aebf-40a1-b823-5346385fa139" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,8 +13,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/newbot.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="30" column="14" selection-start-line="30" selection-start-column="14" selection-end-line="30" selection-end-column="14" />
+            <state relative-caret-position="629">
+              <caret line="38" lean-forward="true" selection-start-line="38" selection-end-line="38" />
               <folding>
                 <element signature="e#0#25#0" expanded="true" />
               </folding>
@@ -185,12 +183,12 @@
       <workItem from="1559386591872" duration="12311000" />
       <workItem from="1559407489374" duration="38000" />
       <workItem from="1559408207720" duration="141000" />
-      <workItem from="1559468365107" duration="196000" />
+      <workItem from="1559468365107" duration="442000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="62416000" />
+    <option name="totallyTimeSpent" value="62662000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -251,8 +249,8 @@
     <entry file="file://C:/Program Files (x86)/Python37-32/Lib/site-packages/telebot/apihelper.py" />
     <entry file="file://$PROJECT_DIR$/newbot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="30" column="14" selection-start-line="30" selection-start-column="14" selection-end-line="30" selection-end-column="14" />
+        <state relative-caret-position="629">
+          <caret line="38" lean-forward="true" selection-start-line="38" selection-end-line="38" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
           </folding>
