@@ -1,12 +1,12 @@
 from telebot import types
 import telebot
 
-
 token = '797488097:AAFIilpcv61tuQ7kFDtZHZyuPpcE8KuSI88'
 
 bot = telebot.TeleBot(token)
 
 users = {}
+
 
 # name
 # age
@@ -26,8 +26,40 @@ def help_for_helpless(message):
 # Сделать кнопку регистрации на начальном экране
 @bot.message_handler(commands=['reg'])
 def profile_start(message):
+    if message.from_user.id in users:
+        bot.send_message(message.from_user.id, 'Вам недоступна эта команда')
+        return
     bot.send_message(message.from_user.id, "Как вас зовут?")
     bot.register_next_step_handler(message, profile_get_name)
+
+
+@bot.message_handler(content_types=['text'])
+def profile_pre_start(message):
+    bot.send_message(message.from_user.id, "Введите комманду /reg для регистрации")
+
+
+# Скип добавления фотографий, если пользователь не хочет их добавлять
+@bot.message_handler(commands=['skip_photos'])
+def profile_skip_photos(message):
+    if 'photos' not in users[message.from_user.id]:
+        bot.send_message(message.from_user.id, 'Вы еще не дошли до добавления фотографий')
+        return
+    users[message.from_user.id]['photos'] = []
+    bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, уря!')
+    print(users)
+
+
+# Остановка добавления фотографий, если пользователь добавил все, что хотел
+@bot.message_handler(commands=['stop_photos'])
+def profile_stop_photos(message):
+    if 'photos' not in users[message.from_user.id]:
+        bot.send_message(message.from_user.id, 'Вы еще не дошли до добавления фотографий')
+        return
+    if not users[message.from_user.id]['photos']:
+        bot.send_message(message.from_user.id, 'Вы еще не добавили ни одной фотографии')
+        return
+    print(users[message.from_user.id])
+    bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, ура!')
 
 
 @bot.message_handler(content_types=['text'])
@@ -163,55 +195,25 @@ def profile_get_about_partner(message):
         return profile_get_about_partner
     users[message.from_user.id]['about_partner'] = message.text
     print(users)
-    bot.send_message(message.from_user.id, 'Ваши фотографии? (Максимум 4)')
+    keyboard = types.ReplyKeyboardMarkup(row_width=2)
+    keyboard.add(types.KeyboardButton('/skip_photos'), types.KeyboardButton('/stop_photos'))
+    bot.send_message(message.from_user.id, 'Ваши фотографии? (Максимум 4). Если вы не хотите добавлять фотографии, напишите /skip_photos \n Если вы добавили нужные вам фотографии,'
+                                           'напишите /stop_photos', reply_markup=keyboard)
     bot.register_next_step_handler(message, profile_get_photos)
+    users[message.from_user.id]['photos'] = []
 
 
 @bot.message_handler(content_types=['photo'])
 def profile_get_photos(message):
     try:
-        # file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
-        # downloaded_file = bot.download_file(file_info.file_path)
-
-        # for photo in message.photo:
-
-        # for m in message:
-        #     file_info = bot.get_file(m.photo[len(m.photo) - 1].file_id)
-        #     downloaded_file = bot.download_file(file_info.file_path)
-        #     users[message.from_user.id]['photo'] = downloaded_file
-        #     print('Отправка в БД')
-        #     bot.reply_to(message, "Фото добавлено")
-        #     del users[message.from_user.id]['photo']
-
-        # # Добавление фотографии в словарь
-        # users[message.from_user.id]['photo'] = downloaded_files
-        #
-        # # Отправлка в БД
-        # print('Отправлка в БД')
-
-        # for photo in file_info.file_path:
-        #     users[message.from_user.id]['photo'] = downloaded_file
-        #     print('Отправлка в БД')
-        #     bot.reply_to(message, "Фото добавлено")
-        #     del users[message.from_user.id]['photo']
-
-        #     # users[message.from_user.id]['photo'] = [downloaded_files]
-        #     # print(users)
-        #
-        #     # for file in downloaded_files:
-        #     #     files = [].append(file)
-        #
-        #     files = [file for file in downloaded_files]
-        #
-        #     users[message.from_user.id]['photos'] = files
-        #
-        #     f = open('text.txt', 'w')
-        #
-        #     f.write(str(downloaded_files))
-        #
-        #     f.close()
-
-        print(users)
+        file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
+        downloaded_file = bot.download_file(file_info.file_path)
+        if len(users[message.from_user.id]['photos']) <= 3:
+            users[message.from_user.id]['photos'].append(downloaded_file)
+            if len(users[message.from_user.id]['photos']) > 3:
+                bot.send_message(message.from_user.id, 'Вы успешно добавили 4 фотографии. Ваша анкета зарегистрирована, ура!')
+                print(users)
+        print(len(users[message.from_user.id]['photos']))
 
     except Exception as e:
         print(e)
