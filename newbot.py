@@ -214,13 +214,13 @@ def profile_get_about_partner(message):
 
 @bot.message_handler(content_types=['photo'])
 def profile_get_photos(message):
+    keyboard_hider = types.ReplyKeyboardRemove()
     try:
         file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
         downloaded_file = bot.download_file(file_info.file_path)
         if len(users[message.from_user.id]['photos']) <= 3:
             users[message.from_user.id]['photos'].append(downloaded_file)
             if len(users[message.from_user.id]['photos']) > 3:
-                keyboard_hider = types.ReplyKeyboardRemove()
                 bot.send_message(message.from_user.id, 'Вы успешно добавили 4 фотографии. Ваша анкета зарегистрирована, ура!', reply_markup=keyboard_hider)
                 print(users)
         else:
@@ -228,6 +228,21 @@ def profile_get_photos(message):
         print(len(users[message.from_user.id]['photos']))
 
     except Exception as e:
+        btn_photo = message.text.lower()
+        if btn_photo == '/skip_photos':
+            bot.send_message(message.from_user.id, 'Вы ещё можете добавить фотографии в любой момент',
+                             reply_markup=keyboard_hider)
+            # bot.register_next_step_handler(message, следующая функция)
+        if btn_photo == '/stop_photos':
+            if len(users[message.from_user.id]['photos']) >= 1:
+                bot.send_message(message.from_user.id, 'Вы ещё можете пополнить фотографии вашего профиля в любой момент',
+                                 reply_markup=keyboard_hider)
+                # bot.register_next_step_handler(message, следующая функция)
+            else:
+                bot.send_message(message.from_user.id,
+                                 'Для остановки подачи фотографий вам нужно иметь хотя бы больше одной фотографии')
+                bot.register_next_step_handler(message, profile_get_photos)
+                return profile_get_photos
         print(e)
         bot.send_message(message.from_user.id, 'Пожалуйста отправьте фото нужного формата')
         bot.register_next_step_handler(message, profile_get_photos)
