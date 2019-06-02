@@ -18,6 +18,7 @@ file = {'file': f}
 
 # print(put('http://127.0.0.1:5000/api/users/23423323', headers={'password': 'yEChQDWrLCXg3zQPvJeEuY25e3EOn0'},
 #           json={'interests': 'программирование, Python, философия, биология'}).json())
-print(get('http://127.0.0.1:5000/api/users/23423323', headers={'password': 'yEChQDWrLCXg3zQPvJeEuY25e3EOn0'}).json())
+# print(get('http://127.0.0.1:5000/api/users/23423323', headers={'password': 'yEChQDWrLCXg3zQPvJeEuY25e3EOn0'}).json())
 # print(put('http://127.0.0.1:5000/api/users/23423323', json={'name': 'Не Иван'}).json())
 # print(post('http://127.0.0.1:5000/api/users', json=user, headers={'password': 'yEChQDWrLCXg3zQPvJeEuY25e3EOn0'}).json())
+print(get('http://puparass.pythonanywhere.com/api/users/1231', headers={'password': 'yEChQDWrLCXg3zQPvJeEuY25e3EOn0'}).json())
