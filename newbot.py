@@ -35,35 +35,35 @@ def profile_start(message):
 
 
 # Скип добавления фотографий, если пользователь не хочет их добавлять
-@bot.message_handler(commands=['skip_photos'])
-def profile_skip_photos(message):
-    if message.from_user.id not in users:
-        bot.send_message(message.from_user.id, 'Вам недоступна эта команда')
-        return
-    if 'photos' not in users[message.from_user.id]:
-        bot.send_message(message.from_user.id, 'Вы еще не дошли до добавления фотографий')
-        return
-    users[message.from_user.id]['photos'] = []
-    keyboard_hider = types.ReplyKeyboardRemove()
-    bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, уря!', reply_markup=keyboard_hider)
-    print(users)
+# @bot.message_handler(commands=['skip_photos'])
+# def profile_skip_photos(message):
+#     if message.from_user.id not in users:
+#         bot.send_message(message.from_user.id, 'Вам недоступна эта команда')
+#         return
+#     if 'photos' not in users[message.from_user.id]:
+#         bot.send_message(message.from_user.id, 'Вы еще не дошли до добавления фотографий')
+#         return
+#     users[message.from_user.id]['photos'] = []
+#     keyboard_hider = types.ReplyKeyboardRemove()
+#     bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, уря!', reply_markup=keyboard_hider)
+#     print(users)
 
 
 # Остановка добавления фотографий, если пользователь добавил все, что хотел
-@bot.message_handler(commands=['stop_photos'])
-def profile_stop_photos(message):
-    if message.from_user.id not in users:
-        bot.send_message(message.from_user.id, 'Вам недоступна эта команда')
-        return
-    if 'photos' not in users[message.from_user.id]:
-        bot.send_message(message.from_user.id, 'Вы еще не дошли до добавления фотографий')
-        return
-    if not users[message.from_user.id]['photos']:
-        bot.send_message(message.from_user.id, 'Вы еще не добавили ни одной фотографии')
-        return
-    print(users[message.from_user.id])
-    keyboard_hider = types.ReplyKeyboardRemove()
-    bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, ура!', reply_markup=keyboard_hider)
+# @bot.message_handler(commands=['stop_photos'])
+# def profile_stop_photos(message):
+#     if message.from_user.id not in users:
+#         bot.send_message(message.from_user.id, 'Вам недоступна эта команда')
+#         return
+#     if 'photos' not in users[message.from_user.id]:
+#         bot.send_message(message.from_user.id, 'Вы еще не дошли до добавления фотографий')
+#         return
+#     if not users[message.from_user.id]['photos']:
+#         bot.send_message(message.from_user.id, 'Вы еще не добавили ни одной фотографии')
+#         return
+#     print(users[message.from_user.id])
+#     keyboard_hider = types.ReplyKeyboardRemove()
+#     bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, ура!', reply_markup=keyboard_hider)
 
 
 @bot.message_handler(content_types=['text'])
