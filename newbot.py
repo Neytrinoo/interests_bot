@@ -197,8 +197,10 @@ def profile_get_about_partner(message):
     print(users)
     keyboard = types.ReplyKeyboardMarkup(row_width=2)
     keyboard.add(types.KeyboardButton('/skip_photos'), types.KeyboardButton('/stop_photos'))
-    bot.send_message(message.from_user.id, 'Ваши фотографии? (Максимум 4). Если вы не хотите добавлять фотографии, напишите /skip_photos \n Если вы добавили нужные вам фотографии,'
-                                           'напишите /stop_photos', reply_markup=keyboard)
+    bot.send_message(message.from_user.id,
+                     'Ваши фотографии? (Максимум 4). Если вы не хотите добавлять фотографии,'
+                     ' напишите /skip_photos \n Если вы добавили нужные вам фотографии,'
+                     'напишите /stop_photos', reply_markup=keyboard)
     bot.register_next_step_handler(message, profile_get_photos)
     users[message.from_user.id]['photos'] = []
 
@@ -211,7 +213,8 @@ def profile_get_photos(message):
         if len(users[message.from_user.id]['photos']) <= 3:
             users[message.from_user.id]['photos'].append(downloaded_file)
             if len(users[message.from_user.id]['photos']) > 3:
-                bot.send_message(message.from_user.id, 'Вы успешно добавили 4 фотографии. Ваша анкета зарегистрирована, ура!')
+                bot.send_message(message.from_user.id,
+                                 'Вы успешно добавили 4 фотографии. Ваша анкета зарегистрирована, ура!')
                 print(users)
         print(len(users[message.from_user.id]['photos']))
 
