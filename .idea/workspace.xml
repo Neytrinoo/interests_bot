@@ -28,8 +28,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/newbot.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="603">
-              <caret line="216" column="11" selection-start-line="216" selection-start-column="11" selection-end-line="216" selection-end-column="11" />
+            <state relative-caret-position="331">
+              <caret line="32" column="88" selection-start-line="32" selection-start-column="88" selection-end-line="32" selection-end-column="88" />
               <folding>
                 <element signature="e#0#25#0" expanded="true" />
               </folding>
@@ -228,11 +228,16 @@
 =======
       <workItem from="1559468365107" duration="442000" />
       <workItem from="1559470422536" duration="14000" />
+<<<<<<< HEAD
 >>>>>>> 438c002f82e873e501ce4c1b623a3585c795b2af
+=======
+      <workItem from="1559476387252" duration="154000" />
+>>>>>>> 914b25074d46a356ff996d9a5abf0f0222f2e25b
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -246,11 +251,15 @@
 =======
     <option name="totallyTimeSpent" value="62676000" />
 >>>>>>> 438c002f82e873e501ce4c1b623a3585c795b2af
+=======
+    <option name="totallyTimeSpent" value="62830000" />
+>>>>>>> 914b25074d46a356ff996d9a5abf0f0222f2e25b
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -264,6 +273,9 @@
 =======
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25799572" />
 >>>>>>> 438c002f82e873e501ce4c1b623a3585c795b2af
+=======
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26066098" />
+>>>>>>> 914b25074d46a356ff996d9a5abf0f0222f2e25b
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -321,6 +333,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         <state relative-caret-position="210">
           <caret line="168" lean-forward="true" selection-start-line="168" selection-end-line="168" />
 =======
@@ -335,6 +348,10 @@
         <state relative-caret-position="603">
           <caret line="216" column="11" selection-start-line="216" selection-start-column="11" selection-end-line="216" selection-end-column="11" />
 >>>>>>> 438c002f82e873e501ce4c1b623a3585c795b2af
+=======
+        <state relative-caret-position="331">
+          <caret line="32" column="88" selection-start-line="32" selection-start-column="88" selection-end-line="32" selection-end-column="88" />
+>>>>>>> 914b25074d46a356ff996d9a5abf0f0222f2e25b
           <folding>
             <element signature="e#0#25#0" expanded="true" />
           </folding>

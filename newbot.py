@@ -1,6 +1,5 @@
 from telebot import types
 import telebot
-from requests import get, post, delete, put
 
 token = '797488097:AAFIilpcv61tuQ7kFDtZHZyuPpcE8KuSI88'
 
@@ -18,6 +17,7 @@ users = {}
 # photos
 # telegram_id
 
+
 @bot.message_handler(commands=['help'])
 def help_for_helpless(message):
     bot.send_message(message.from_user.id, "<Полезная инструкция>")
@@ -29,29 +29,32 @@ def profile_start(message):
     if message.from_user.id in users:
         bot.send_message(message.from_user.id, 'Вам недоступна эта команда')
         return
-    bot.send_message(message.from_user.id, "Как вас зовут?")
+    keyboard_hider = types.ReplyKeyboardRemove()
+    bot.send_message(message.from_user.id, "Как вас зовут?", reply_markup=keyboard_hider)
     bot.register_next_step_handler(message, profile_get_name)
-
-
-@bot.message_handler(content_types=['text'])
-def profile_pre_start(message):
-    bot.send_message(message.from_user.id, "Введите комманду /reg для регистрации")
 
 
 # Скип добавления фотографий, если пользователь не хочет их добавлять
 @bot.message_handler(commands=['skip_photos'])
 def profile_skip_photos(message):
+    if message.from_user.id not in users:
+        bot.send_message(message.from_user.id, 'Вам недоступна эта команда')
+        return
     if 'photos' not in users[message.from_user.id]:
         bot.send_message(message.from_user.id, 'Вы еще не дошли до добавления фотографий')
         return
     users[message.from_user.id]['photos'] = []
-    bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, уря!')
+    keyboard_hider = types.ReplyKeyboardRemove()
+    bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, уря!', reply_markup=keyboard_hider)
     print(users)
 
 
 # Остановка добавления фотографий, если пользователь добавил все, что хотел
 @bot.message_handler(commands=['stop_photos'])
 def profile_stop_photos(message):
+    if message.from_user.id not in users:
+        bot.send_message(message.from_user.id, 'Вам недоступна эта команда')
+        return
     if 'photos' not in users[message.from_user.id]:
         bot.send_message(message.from_user.id, 'Вы еще не дошли до добавления фотографий')
         return
@@ -59,7 +62,13 @@ def profile_stop_photos(message):
         bot.send_message(message.from_user.id, 'Вы еще не добавили ни одной фотографии')
         return
     print(users[message.from_user.id])
-    bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, ура!')
+    keyboard_hider = types.ReplyKeyboardRemove()
+    bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, ура!', reply_markup=keyboard_hider)
+
+
+@bot.message_handler(content_types=['text'])
+def profile_pre_start(message):
+    bot.send_message(message.from_user.id, "Введите комманду /reg для регистрации")
 
 
 @bot.message_handler(content_types=['text'])
@@ -197,10 +206,8 @@ def profile_get_about_partner(message):
     print(users)
     keyboard = types.ReplyKeyboardMarkup(row_width=2)
     keyboard.add(types.KeyboardButton('/skip_photos'), types.KeyboardButton('/stop_photos'))
-    bot.send_message(message.from_user.id,
-                     'Ваши фотографии? (Максимум 4). Если вы не хотите добавлять фотографии,'
-                     ' напишите /skip_photos \n Если вы добавили нужные вам фотографии,'
-                     'напишите /stop_photos', reply_markup=keyboard)
+    bot.send_message(message.from_user.id, 'Ваши фотографии? (Максимум 4). Если вы не хотите добавлять фотографии, напишите /skip_photos \n Если вы добавили нужные вам фотографии,'
+                                           'напишите /stop_photos', reply_markup=keyboard)
     bot.register_next_step_handler(message, profile_get_photos)
     users[message.from_user.id]['photos'] = []
 
@@ -210,16 +217,14 @@ def profile_get_photos(message):
     try:
         file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
         downloaded_file = bot.download_file(file_info.file_path)
-        if len(users[message.from_user.id]['photos']) <= 4:
+        if len(users[message.from_user.id]['photos']) <= 3:
             users[message.from_user.id]['photos'].append(downloaded_file)
             if len(users[message.from_user.id]['photos']) > 3:
-                bot.send_message(message.from_user.id,
-                                 'Вы успешно добавили 4 фотографии. Ваша анкета зарегистрирована, ура!',
-                                 reply_markup=keyboard_hider)
+                keyboard_hider = types.ReplyKeyboardRemove()
+                bot.send_message(message.from_user.id, 'Вы успешно добавили 4 фотографии. Ваша анкета зарегистрирована, ура!', reply_markup=keyboard_hider)
                 print(users)
         else:
-            bot.send_message(message.from_user.id, '4 первые фотографии были добавлены,'
-                                                   ' но больше вы добавить не можете.')
+            bot.send_message(message.from_user.id, '4 первые фотографии были добавлены, но больше вы добавить не можете.')
         print(len(users[message.from_user.id]['photos']))
 
     except Exception as e:
