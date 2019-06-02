@@ -23,13 +23,6 @@ def help_for_helpless(message):
     bot.send_message(message.from_user.id, "<Полезная инструкция>")
 
 
-# Сделать кнопку регистрации на начальном экране
-@bot.message_handler(commands=['reg'])
-def profile_start(message):
-    bot.send_message(message.from_user.id, "Как вас зовут?")
-    bot.register_next_step_handler(message, profile_get_name)
-
-
 @bot.message_handler(content_types=['text'])
 def profile_get_name(message):
     if message.text.isalpha() is False:
@@ -110,11 +103,11 @@ def profile_get_age(message):
 # Имеется встроенный обработчик для выбора пола
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def profile_get_sex(message):
-    btn_sex = message.text
-    if btn_sex == "Мужской":
+    btn_sex = message.text.lower()
+    if btn_sex == "мужской":
         active_sex = "Мужской"
         users[message.from_user.id]['sex'] = active_sex
-    elif btn_sex == "Женский":
+    elif btn_sex == "женский":
         active_sex = "Женский"
         users[message.from_user.id]['sex'] = active_sex
     else:
@@ -133,7 +126,7 @@ def profile_get_interests(message):
     p_interests = message.text.split(',')
     for i in range(len(p_interests)):
         p_interests[i] = p_interests[i].lower().lstrip().rstrip()
-        if len(p_interests[i]) >= 128:
+        if len(p_interests[i]) >= 256:
             bot.send_message(message.from_user.id, 'Длина одного из интересов не может превышать 256 символов')
             bot.register_next_step_handler(message, profile_get_interests)
             return profile_get_interests
@@ -145,8 +138,8 @@ def profile_get_interests(message):
 
 @bot.message_handler(content_types=['text'])
 def profile_get_biography(message):
-    if len(message.text) >= 256:
-        bot.send_message(message.from_user.id, 'Длина биографии не может превышать 256 символов')
+    if len(message.text) >= 1000:
+        bot.send_message(message.from_user.id, 'Длина биографии не может превышать 1000 символов')
         bot.register_next_step_handler(message, profile_get_biography)
         return profile_get_biography
     users[message.from_user.id]['biography'] = message.text

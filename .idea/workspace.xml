@@ -3,10 +3,14 @@
   <component name="ChangeListManager">
     <list default="true" id="6f9fef1c-aebf-40a1-b823-5346385fa139" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/Bot.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Bot.iml" afterDir="false" />
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/.idea/libraries/R_User_Library.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/R_User_Library.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+>>>>>>> 75e144b80c659f019c0010308712bb40d766d55a
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -16,7 +20,20 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+    <leaf>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/newbot.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="875">
+              <caret line="191" column="23" lean-forward="true" selection-start-line="191" selection-start-column="23" selection-end-line="191" selection-end-column="23" />
+              <folding>
+                <element signature="e#0#25#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -48,7 +65,21 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+<<<<<<< HEAD
       <pane id="ProjectPane" />
+=======
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="telegram_bot_project" type="b2602c69:ProjectViewProjectNode" />
+              <item name="telegram_bot_project" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+>>>>>>> 75e144b80c659f019c0010308712bb40d766d55a
       <pane id="Scope" />
     </panes>
   </component>
@@ -167,17 +198,29 @@
       <workItem from="1559386591872" duration="12311000" />
       <workItem from="1559407489374" duration="38000" />
       <workItem from="1559408207720" duration="141000" />
+<<<<<<< HEAD
       <workItem from="1559416170612" duration="290000" />
+=======
+>>>>>>> 75e144b80c659f019c0010308712bb40d766d55a
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
+<<<<<<< HEAD
     <option name="totallyTimeSpent" value="62510000" />
+=======
+    <option name="totallyTimeSpent" value="62220000" />
+>>>>>>> 75e144b80c659f019c0010308712bb40d766d55a
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1040" height="744" extended-state="6" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <editor active="true" />
     <layout>
+<<<<<<< HEAD
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25195312" />
+=======
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25266525" />
+>>>>>>> 75e144b80c659f019c0010308712bb40d766d55a
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -232,8 +275,13 @@
     <entry file="file://C:/Program Files (x86)/Python37-32/Lib/site-packages/telebot/apihelper.py" />
     <entry file="file://$PROJECT_DIR$/newbot.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="210">
           <caret line="168" lean-forward="true" selection-start-line="168" selection-end-line="168" />
+=======
+        <state relative-caret-position="875">
+          <caret line="191" column="23" lean-forward="true" selection-start-line="191" selection-start-column="23" selection-end-line="191" selection-end-column="23" />
+>>>>>>> 75e144b80c659f019c0010308712bb40d766d55a
           <folding>
             <element signature="e#0#25#0" expanded="true" />
           </folding>
