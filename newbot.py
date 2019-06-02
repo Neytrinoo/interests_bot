@@ -1,5 +1,6 @@
 from telebot import types
 import telebot
+from requests import get, post, delete, put
 
 token = '797488097:AAFIilpcv61tuQ7kFDtZHZyuPpcE8KuSI88'
 
@@ -16,7 +17,6 @@ users = {}
 # about_partner
 # photos
 # telegram_id
-
 
 @bot.message_handler(commands=['help'])
 def help_for_helpless(message):
@@ -210,12 +210,16 @@ def profile_get_photos(message):
     try:
         file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
         downloaded_file = bot.download_file(file_info.file_path)
-        if len(users[message.from_user.id]['photos']) <= 3:
+        if len(users[message.from_user.id]['photos']) <= 4:
             users[message.from_user.id]['photos'].append(downloaded_file)
             if len(users[message.from_user.id]['photos']) > 3:
                 bot.send_message(message.from_user.id,
-                                 'Вы успешно добавили 4 фотографии. Ваша анкета зарегистрирована, ура!')
+                                 'Вы успешно добавили 4 фотографии. Ваша анкета зарегистрирована, ура!',
+                                 reply_markup=keyboard_hider)
                 print(users)
+        else:
+            bot.send_message(message.from_user.id, '4 первые фотографии были добавлены,'
+                                                   ' но больше вы добавить не можете.')
         print(len(users[message.from_user.id]['photos']))
 
     except Exception as e:
