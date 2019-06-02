@@ -213,6 +213,8 @@ def profile_get_photos(message):
             if len(users[message.from_user.id]['photos']) > 3:
                 bot.send_message(message.from_user.id, 'Вы успешно добавили 4 фотографии. Ваша анкета зарегистрирована, ура!')
                 print(users)
+        else:
+            bot.send_message(message.from_user.id, '4 первые фотографии были добавлены, но больше вы добавить не можете.')
         print(len(users[message.from_user.id]['photos']))
 
     except Exception as e:
