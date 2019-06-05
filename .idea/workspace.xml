@@ -1,7 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
+<<<<<<< HEAD
     <list default="true" id="6f9fef1c-aebf-40a1-b823-5346385fa139" name="Default Changelist" comment="" />
+=======
+    <list default="true" id="6f9fef1c-aebf-40a1-b823-5346385fa139" name="Default Changelist" comment="">
+<<<<<<< HEAD
+      <change beforePath="$PROJECT_DIR$/.idea/Bot.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Bot.iml" afterDir="false" />
+<<<<<<< HEAD
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/R_User_Library.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/R_User_Library.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+>>>>>>> 75e144b80c659f019c0010308712bb40d766d55a
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/newbot.py" beforeDir="false" afterPath="$PROJECT_DIR$/newbot.py" afterDir="false" />
+>>>>>>> c367b60c454764aef7721c8a7b916f607316a1bc
+    </list>
+>>>>>>> 0df95e2ca361b4e198f533ff7ea8e3182ee15133
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -54,6 +73,16 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+      <pane id="ProjectPane" />
+=======
+=======
+      <pane id="Scope" />
+>>>>>>> c367b60c454764aef7721c8a7b916f607316a1bc
+=======
+>>>>>>> 438c002f82e873e501ce4c1b623a3585c795b2af
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -65,7 +94,15 @@
           <select />
         </subPane>
       </pane>
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> 75e144b80c659f019c0010308712bb40d766d55a
       <pane id="Scope" />
+=======
+>>>>>>> c367b60c454764aef7721c8a7b916f607316a1bc
+=======
+      <pane id="Scope" />
+>>>>>>> 438c002f82e873e501ce4c1b623a3585c795b2af
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -183,20 +220,74 @@
       <workItem from="1559386591872" duration="12311000" />
       <workItem from="1559407489374" duration="38000" />
       <workItem from="1559408207720" duration="141000" />
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+      <workItem from="1559416170612" duration="290000" />
+=======
+>>>>>>> 75e144b80c659f019c0010308712bb40d766d55a
+=======
+      <workItem from="1559468365107" duration="196000" />
+>>>>>>> c367b60c454764aef7721c8a7b916f607316a1bc
+=======
       <workItem from="1559468365107" duration="442000" />
       <workItem from="1559470422536" duration="14000" />
+<<<<<<< HEAD
       <workItem from="1559476387252" duration="1299000" />
+=======
+<<<<<<< HEAD
+>>>>>>> 438c002f82e873e501ce4c1b623a3585c795b2af
+=======
+      <workItem from="1559476387252" duration="154000" />
+>>>>>>> 914b25074d46a356ff996d9a5abf0f0222f2e25b
+>>>>>>> 0df95e2ca361b4e198f533ff7ea8e3182ee15133
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
+<<<<<<< HEAD
     <option name="totallyTimeSpent" value="63975000" />
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+    <option name="totallyTimeSpent" value="62510000" />
+=======
+    <option name="totallyTimeSpent" value="62220000" />
+>>>>>>> 75e144b80c659f019c0010308712bb40d766d55a
+=======
+    <option name="totallyTimeSpent" value="62416000" />
+>>>>>>> c367b60c454764aef7721c8a7b916f607316a1bc
+=======
+    <option name="totallyTimeSpent" value="62676000" />
+>>>>>>> 438c002f82e873e501ce4c1b623a3585c795b2af
+=======
+    <option name="totallyTimeSpent" value="62830000" />
+>>>>>>> 914b25074d46a356ff996d9a5abf0f0222f2e25b
+>>>>>>> 0df95e2ca361b4e198f533ff7ea8e3182ee15133
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25195312" />
+=======
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25266525" />
+>>>>>>> 75e144b80c659f019c0010308712bb40d766d55a
+=======
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2553305" />
+>>>>>>> c367b60c454764aef7721c8a7b916f607316a1bc
+=======
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25799572" />
+>>>>>>> 438c002f82e873e501ce4c1b623a3585c795b2af
+=======
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26066098" />
+>>>>>>> 914b25074d46a356ff996d9a5abf0f0222f2e25b
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -251,8 +342,33 @@
     <entry file="file://C:/Program Files (x86)/Python37-32/Lib/site-packages/telebot/apihelper.py" />
     <entry file="file://$PROJECT_DIR$/newbot.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="297">
           <caret line="30" column="14" lean-forward="true" selection-start-line="30" selection-start-column="14" selection-end-line="30" selection-end-column="14" />
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+        <state relative-caret-position="210">
+          <caret line="168" lean-forward="true" selection-start-line="168" selection-end-line="168" />
+=======
+        <state relative-caret-position="875">
+          <caret line="191" column="23" lean-forward="true" selection-start-line="191" selection-start-column="23" selection-end-line="191" selection-end-column="23" />
+>>>>>>> 75e144b80c659f019c0010308712bb40d766d55a
+=======
+        <state relative-caret-position="221">
+          <caret line="30" column="14" selection-start-line="30" selection-start-column="14" selection-end-line="30" selection-end-column="14" />
+>>>>>>> c367b60c454764aef7721c8a7b916f607316a1bc
+=======
+        <state relative-caret-position="603">
+          <caret line="216" column="11" selection-start-line="216" selection-start-column="11" selection-end-line="216" selection-end-column="11" />
+>>>>>>> 438c002f82e873e501ce4c1b623a3585c795b2af
+=======
+        <state relative-caret-position="331">
+          <caret line="32" column="88" selection-start-line="32" selection-start-column="88" selection-end-line="32" selection-end-column="88" />
+>>>>>>> 914b25074d46a356ff996d9a5abf0f0222f2e25b
+>>>>>>> 0df95e2ca361b4e198f533ff7ea8e3182ee15133
           <folding>
             <element signature="e#0#25#0" expanded="true" />
           </folding>
