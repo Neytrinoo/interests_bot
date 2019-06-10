@@ -2,6 +2,7 @@ from flask_restful import reqparse, abort, Api, Resource
 from app import app, db
 from app.models import User, Interests, Photo
 from flask import jsonify, request
+import time
 import werkzeug
 
 api = Api(app)
@@ -13,6 +14,7 @@ def type_error(field, type_field):
     return {'error': 'An error occurred. ' + field[0].upper() + field[1:] + ' must be only str, not ' + type_field}
 
 
+# Аборты
 def abort_if_user_not_found(id):
     if User.query.filter_by(telegram_id=id).first() is None:
         abort(404, message="User {} not found".format(id))
@@ -26,6 +28,9 @@ def abort_if_password_false(password):
 def abort_if_user_found(id):
     if User.query.filter_by(telegram_id=id).first() is not None:
         abort(404, message="User {} already exist".format(id))
+
+
+# Запрет абортов
 
 
 class UserApi(Resource):
@@ -140,6 +145,42 @@ class UserApi(Resource):
             return jsonify({'error': 'An error occurred'})
 
 
+class UserSearch(Resource):  # Для поиска пользователей для диалога
+    parser = reqparse.RequestParser()
+    # Тип диалога, который ищет пользователь может быть search_interests_dialog и search_gender_dialog
+    parser.add_argument('telegram_id', required=True)
+    parser.add_argument('type_dialog', required=True)
+
+    def post(self):
+        # Не зная пароль никто не сможет получить пользователя
+        if 'password' not in request.headers:
+            abort(400, message='Access error')
+        abort_if_password_false(request.headers['password'])
+
+        args = self.parser.parse_args()
+        try:
+            telegram_id = int(args['telegram_id'])
+        except Exception as e:
+            return jsonify({'error': 'telegram_id can only contain numbers'})
+        abort_if_user_not_found(telegram_id)
+
+        if args['type_dialog'] == 'search_interests_dialog':  # Если мы ищем собеседника по интересам
+            start_time = time.time()
+            while time.time() - start_time <= 10:
+                common_interests_with_now_user = {}  # Словарь совпадений интересов с исходным пользователем
+                now_user_interests = set(User.query.filter_by(telegram_id=telegram_id).first().interests)  # Множество интересов исходного пользователя
+                search_dialog_users = User.query.filter_by(status_dialog='search_interests_dialog').all()
+                for user in search_dialog_users:
+                    common_interests_with_now_user[user.telegram_id] = len(now_user_interests & set(user.interests))  # Длина пересечения множеств интересов двух пользователей
+                suitable_user = sorted(common_interests_with_now_user.items(), key=lambda x: x[1])[-1]  # Пользователь с наибольшим совпадением интересов
+                if suitable_user[-1] != 0:  # Если есть пользователь, с которым совпадает хоть один интерес
+                    User.query.filter_by(telegram_id=suitable_user[0]).first().status_dialog = 'in_dialog'
+                    User.query.filter_by(telegram_id=telegram_id).first().status_dialog = 'in_dialog'
+                    db.session.commit()
+                    return jsonify({'status': 'OK', 'telegram_id_suitable_user': suitable_user[0]})
+            return jsonify({'status': 'The search timed out for 10 seconds. At the moment there are no users with your interests'})
+
+
 class UserListApi(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('name', required=True)
@@ -225,3 +266,4 @@ class UserListApi(Resource):
 
 api.add_resource(UserApi, '/api/users/<int:user_id>')
 api.add_resource(UserListApi, '/api/users')
+api.add_resource(UserSearch, '/api/search_dialog')
