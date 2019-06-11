@@ -173,12 +173,15 @@ class UserSearch(Resource):  # Для поиска пользователей д
                 for user in search_dialog_users:
                     common_interests_with_now_user[user.telegram_id] = len(now_user_interests & set(user.interests))  # Длина пересечения множеств интересов двух пользователей
                 suitable_user = sorted(common_interests_with_now_user.items(), key=lambda x: x[1])[-1]  # Пользователь с наибольшим совпадением интересов
-                if suitable_user[-1] != 0:  # Если есть пользователь, с которым совпадает хоть один интерес
+                if User.query.filter_by(telegram_id=telegram_id).first().status_dialog == 'in_dialog':
+                    return jsonify({'status': 'user in dialog', 'message': 'User {} is already in dialog'.format(str(telegram_id))})
+                if suitable_user[-1] != 0 and User.query.filter_by(
+                        telegram_id=suitable_user[0]).first().status_dialog != 'in_dialog':  # Если есть пользователь, с которым совпадает хоть один интерес, и он еще не в диалоге
                     User.query.filter_by(telegram_id=suitable_user[0]).first().status_dialog = 'in_dialog'
                     User.query.filter_by(telegram_id=telegram_id).first().status_dialog = 'in_dialog'
                     db.session.commit()
                     return jsonify({'status': 'OK', 'telegram_id_suitable_user': suitable_user[0]})
-            return jsonify({'status': 'The search timed out for 10 seconds. At the moment there are no users with your interests'})
+            return jsonify({'status': 'not users', 'message': 'The search timed out for 10 seconds. At the moment there are no users with your interests'})
 
 
 class UserListApi(Resource):
