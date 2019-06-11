@@ -32,6 +32,31 @@ def profile_start(message):
     bot.register_next_step_handler(message, profile_get_name)
 
 
+# Команда поиска собеседника по интересам
+@bot.message_handler(commands=['search_interests'])
+def search_interests(message):
+    user_in_db = get(SERVER_API_URL + '/' + str(message.from_user.id), headers={'password': SECRET_PASSWORD})
+    if user_in_db.status_code != 200:
+        print(user_in_db.json())
+        bot.send_message(message.from_user.id, 'Сначала вам нужно добавить анкету. Для этого напишите /reg')
+        return
+    if 'dialog' in users[message.from_user.id]:
+        bot.send_message(message.from_user.id, 'Вы уже в диалоге, оло')
+    telegram_id_friend = post('http://puparass.pythonanywhere.com/api/search_dialog', headers={'password': SECRET_PASSWORD},
+                              json={'telegram_id': user_in_db.json()['telegram_id'], 'type_dialog': 'search_interests_dialog'}).json()
+    if 'status' in telegram_id_friend and telegram_id_friend['status'] == 'OK':
+        mes = 'Собеседник в абсолютности своей найден. Теперь вы можете общаться. Ах, да, вот его анкета\n'
+        users[message.from_user.id]['dialog'] = telegram_id_friend['telegram_id_suitable_user']
+        users[telegram_id_friend['telegram_id_suitable_user']]['dialog'] = message.from_user.id
+        bot.send_message(message.from_user.id, mes + str(
+            get(SERVER_API_URL + '/' + str(telegram_id_friend['telegram_id_suitable_user']), headers={'password': SECRET_PASSWORD}).json()))
+        bot.send_message(int(telegram_id_friend['telegram_id_suitable_user']), mes + str(user_in_db.json()))
+    else:
+        bot.send_message(message.from_user.id, 'Увы, но почему-то собеседников с подходящими для вас интересами не обнаружилось. '
+                                               'Попробуйте поискать позже, изменить интересы или выполнить поиск по полу (/search_male /search_female)')
+    return
+
+
 # Скип добавления фотографий, если пользователь не хочет их добавлять
 @bot.message_handler(commands=['skip_photos'])
 def profile_skip_photos(message):
@@ -235,13 +260,12 @@ async def add_user_photos(telegram_id, photos):
 
 
 # Добавление анкеты пользователя и запуск добавления фотографий, если они есть
-def register_user(message, user):
+def register_user(user):
     new_user = {}
     for key, value in user.items():
         if key != 'photos':
             new_user[key] = value
     print('Добавление пользователя:', post(SERVER_API_URL, headers={'password': SECRET_PASSWORD}, json=new_user).json())
-    post('http://puparass.pythonanywhere.com/api/search_dialog', headers={'telegram_id': message.from_user.id}, json=new_user).json()
     if user['photos']:  # Если у пользователя есть фотографии, то добавляем их
         asyncio.run(add_user_photos(user['telegram_id'], user['photos']))
 
