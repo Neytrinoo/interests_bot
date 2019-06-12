@@ -11,6 +11,27 @@ bot = telebot.TeleBot(token)
 users = {}
 
 
+# Функция проверки, есть ли пользователь в бд или нет. Позже реализую такую функцию на стороне api, пока что мы получаем все данные о пользователе.
+# Но эта функция просто будет возвращать боту статус, есть ли пользователь в бд или нет
+def is_user_in_db(telegram_id):
+    user_in_db = get(SERVER_API_URL + '/' + str(telegram_id), headers={'password': SECRET_PASSWORD})
+    if user_in_db.status_code == 200:
+        return True
+    return False
+
+
+# Функция для получения всех полей пользовательской анкеты из бд
+def get_user_from_db(telegram_id):
+    user_in_db = get(SERVER_API_URL + '/' + str(telegram_id), headers={'password': SECRET_PASSWORD})
+    return user_in_db
+
+
+def get_companion_telegram_id(telegram_id, type_dialog):
+    telegram_id_friend = post('http://puparass.pythonanywhere.com/api/search_dialog', headers={'password': SECRET_PASSWORD},
+                              json={'telegram_id': str(telegram_id), 'type_dialog': type_dialog})
+    return telegram_id_friend
+
+
 @bot.message_handler(commands=['help'])
 def help_for_helpless(message):
     bot.send_message(message.from_user.id, "<Полезная инструкция>")
@@ -22,9 +43,7 @@ def profile_start(message):
     if message.from_user.id in users:
         bot.send_message(message.from_user.id, 'Вам недоступна эта команда')
         return
-    user_in_db = get(SERVER_API_URL + '/' + str(message.from_user.id), headers={'password': SECRET_PASSWORD})
-    if user_in_db.status_code == 200:
-        print(user_in_db.json())
+    if is_user_in_db(message.from_user.id):
         bot.send_message(message.from_user.id, 'Ваша анкета была добавлена ранее. Вы можете отредактировать ее')
         return
     keyboard_hider = types.ReplyKeyboardRemove()
@@ -35,22 +54,22 @@ def profile_start(message):
 # Команда поиска собеседника по интересам
 @bot.message_handler(commands=['search_interests'])
 def search_interests(message):
-    user_in_db = get(SERVER_API_URL + '/' + str(message.from_user.id), headers={'password': SECRET_PASSWORD})
-    if user_in_db.status_code != 200:
-        print(user_in_db.json())
+    user_in_db = get_user_from_db(message.from_user.id)
+    if not is_user_in_db(message.from_user.id):
         bot.send_message(message.from_user.id, 'Сначала вам нужно добавить анкету. Для этого напишите /reg')
         return
     if 'dialog' in users[message.from_user.id]:
         bot.send_message(message.from_user.id, 'Вы уже в диалоге, оло')
-    telegram_id_friend = post('http://puparass.pythonanywhere.com/api/search_dialog', headers={'password': SECRET_PASSWORD},
-                              json={'telegram_id': user_in_db.json()['telegram_id'], 'type_dialog': 'search_interests_dialog'}).json()
+    telegram_id_friend = get_companion_telegram_id(user_in_db.json()['telegram_id'], 'search_interests_dialog').json()
     if 'status' in telegram_id_friend and telegram_id_friend['status'] == 'OK':
         mes = 'Собеседник в абсолютности своей найден. Теперь вы можете общаться. Ах, да, вот его анкета\n'
         users[message.from_user.id]['dialog'] = telegram_id_friend['telegram_id_suitable_user']
         users[telegram_id_friend['telegram_id_suitable_user']]['dialog'] = message.from_user.id
-        bot.send_message(message.from_user.id, mes + str(
-            get(SERVER_API_URL + '/' + str(telegram_id_friend['telegram_id_suitable_user']), headers={'password': SECRET_PASSWORD}).json()))
+        bot.send_message(message.from_user.id, mes + str(get_user_from_db(telegram_id_friend['telegram_id_suitable_user']).json()))
         bot.send_message(int(telegram_id_friend['telegram_id_suitable_user']), mes + str(user_in_db.json()))
+    elif telegram_id_friend['status'] == 'user in dialog':  # Если пользователь уже в диалоге(такое может быть, и сервер за этим следит), то ничего не делаем.
+        # Пользователь получит сообщение о том, что он в диалоге от другого пользователя
+        pass
     else:
         bot.send_message(message.from_user.id, 'Увы, но почему-то собеседников с подходящими для вас интересами не обнаружилось. '
                                                'Попробуйте поискать позже, изменить интересы или выполнить поиск по полу (/search_male /search_female)')
