@@ -57,6 +57,13 @@ def search_interests(message):
     return
 
 
+@bot.message_handler(content_types=['text'])
+def profile_pre_start(message):
+    if 'dialog' in users[message.from_user.id]:
+        id_friend = users[message.from_user.id]['dialog']
+        bot.send_message(id_friend, message.text)
+
+
 # Скип добавления фотографий, если пользователь не хочет их добавлять
 @bot.message_handler(commands=['skip_photos'])
 def profile_skip_photos(message):
