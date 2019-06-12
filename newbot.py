@@ -32,6 +32,19 @@ def get_companion_telegram_id(telegram_id, type_dialog):
     return telegram_id_friend
 
 
+# 4 ПУНКТ ЗАДАНИЯ
+@bot.message_handler(commands=['show_profile'])
+def show_profile(message):
+    if message.from_user.id in users:
+        user_in_db = get_user_from_db(message.from_user.id)
+        profile = 'Ник:' + user_in_db.json()['name'] + '\nПол:' \
+                  + user_in_db.json()['gender'] + '\nЖизнь в цифрах:' + user_in_db.json()['age'] \
+                  + '\nО вас:' + user_in_db.json()['about_me'] + '\nО желательном хрене:' \
+                  + user_in_db.json()['about_you'] + '\nВаши интересы:' \
+                  + user_in_db.json()['interests']
+        bot.send_message(message.from_user.id, profile)
+
+
 @bot.message_handler(commands=['help'])
 def help_for_helpless(message):
     bot.send_message(message.from_user.id, "<Полезная инструкция>")
@@ -67,6 +80,13 @@ def search_interests(message):
         users[telegram_id_friend['telegram_id_suitable_user']]['dialog'] = message.from_user.id
         bot.send_message(message.from_user.id, mes + str(get_user_from_db(telegram_id_friend['telegram_id_suitable_user']).json()))
         bot.send_message(int(telegram_id_friend['telegram_id_suitable_user']), mes + str(user_in_db.json()))
+        # 3 ПУНКТ ЗАДАНИЯ
+        profile = 'Никнейм товарища:' + telegram_id_friend()['name'] + '\nГендер нашего партийного друга:'\
+                  + telegram_id_friend()['gender'] + '\nКоличество лет, проведенных на заводе:' + telegram_id_friend()['age']\
+                  + '\nДолжность на заводе:' + telegram_id_friend()['about_me'] + '\nЧто этот хрен хочет от тебя:'\
+                  + telegram_id_friend()['about_you'] + '\nЧто в голове у этого буржуя, кроме завода'\
+                  + telegram_id_friend()['interests']
+        bot.send_message(message.from_user.id, profile)
     elif telegram_id_friend['status'] == 'user in dialog':  # Если пользователь уже в диалоге(такое может быть, и сервер за этим следит), то ничего не делаем.
         # Пользователь получит сообщение о том, что он в диалоге от другого пользователя
         pass
@@ -78,9 +98,21 @@ def search_interests(message):
 
 @bot.message_handler(content_types=['text'])
 def profile_pre_start(message):
-    if 'dialog' in users[message.from_user.id]:
-        id_friend = users[message.from_user.id]['dialog']
-        bot.send_message(id_friend, message.text)
+    bot.send_message(message.from_user.id, "Введите комманду /reg для регистрации")
+
+
+@bot.message_handler(content_types=['text'])
+# 1 ПУНКТ ЗАДАНИЯ
+def profile_pre_start(message):
+    if is_user_in_db(message.from_user.id) is True:
+        bot.send_message(message.from_user.id, 'Вам нужно писануть /search_interests чтобы найти жертву для ваших утех')
+        # else:
+        #     bot.send_message(message.from_user.id, 'Лох, сначала зарегайся (/reg - для регистрации)')
+        if message.from_user.id in users and 'dialog' in users[message.from_user.id]:
+            id_friend = users[message.from_user.id]['dialog']
+            bot.send_message(id_friend, message.text)
+        else:
+            bot.send_message(message.from_user.id, '<error>')
 
 
 # Скип добавления фотографий, если пользователь не хочет их добавлять
@@ -114,11 +146,6 @@ def profile_stop_photos(message):
     register_user(users[message.from_user.id])
     keyboard_hider = types.ReplyKeyboardRemove()
     bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, ура!', reply_markup=keyboard_hider)
-
-
-@bot.message_handler(content_types=['text'])
-def profile_pre_start(message):
-    bot.send_message(message.from_user.id, "Введите комманду /reg для регистрации")
 
 
 @bot.message_handler(content_types=['text'])
