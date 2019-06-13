@@ -48,7 +48,6 @@ class UserApi(Resource):
             abort(400, message='Access error')
         abort_if_password_false(request.headers['password'])
 
-        user_id = str(user_id)
         abort_if_user_not_found(user_id)
         user = User.query.filter_by(telegram_id=user_id).first()
         result = {
@@ -67,7 +66,6 @@ class UserApi(Resource):
             abort(400, message='Access error')
         abort_if_password_false(request.headers['password'])
 
-        user_id = str(user_id)
         args = self.parser.parse_args()
         abort_if_user_not_found(user_id)
 
@@ -145,11 +143,23 @@ class UserApi(Resource):
             return jsonify({'error': 'An error occurred'})
 
 
+class UserExist(Resource):
+    def get(self, user_id):
+        # Не зная пароль никто не сможет получить данные пользователей
+        if 'password' not in request.headers:
+            abort(400, message='Access error')
+        abort_if_password_false(request.headers['password'])
+        abort_if_user_not_found(user_id)
+        return jsonify({'success': 'OK'})
+
+
 class UserSearch(Resource):  # Для поиска пользователей для диалога
     parser = reqparse.RequestParser()
-    # Тип диалога, который ищет пользователь может быть search_interests_dialog и search_gender_dialog
+    # Тип диалога, который ищет пользователь может быть search_interests_dialog, search_gender_dialog и stop_dialog
+    # Для stop_dialog нужно также указать telegram_id_companion - телеграм айди собеседника
     parser.add_argument('telegram_id', required=True)
     parser.add_argument('type_dialog', required=True)
+    parser.add_argument('telegram_id_companion', required=False)
 
     def post(self):
         # Не зная пароль никто не сможет получить пользователя
@@ -182,6 +192,13 @@ class UserSearch(Resource):  # Для поиска пользователей д
                     db.session.commit()
                     return jsonify({'status': 'OK', 'telegram_id_suitable_user': suitable_user[0]})
             return jsonify({'status': 'not users', 'message': 'The search timed out for 10 seconds. At the moment there are no users with your interests'})
+        elif args['type_dialog'] == 'stop_dialog':  # Если нужно прекратить диалог между двумя пользователями
+            abort_if_user_not_found(int(args['telegram_id_companion']))
+            User.query.filter_by(telegram_id=args['telegram_id_companion']).status_dialog = 'not_in_dialog'
+            db.session.commit()
+            User.query.filter_by(telegram_id=args['telegram_']).status_dialog = 'not_in_dialog'
+            db.session.commit()
+            return jsonify({'status': 'OK', 'message': 'User {} and user {} are not in dialog'.format(args['telegram_id_companion'], args['telegram_id'])})
 
 
 class UserListApi(Resource):
@@ -201,6 +218,13 @@ class UserListApi(Resource):
         abort_if_password_false(request.headers['password'])
 
         args = self.parser.parse_args()
+
+        # Проверка телеграм-айди
+        try:
+            telegram_id = int(args['telegram_id'])
+        except Exception as e:
+            return jsonify({'error': 'Telegram_id can only contain numbers'})
+
         abort_if_user_found(args['telegram_id'])
 
         # Проверка имени пользователя
@@ -216,12 +240,6 @@ class UserListApi(Resource):
             age = int(args['age'])
         except Exception as e:
             return jsonify({'error': 'Age can only contain numbers'})
-
-        # Проверка телеграм-айди
-        try:
-            telegram_id = int(args['telegram_id'])
-        except Exception as e:
-            return jsonify({'error': 'Telegram_id can only contain numbers'})
 
         # Проверка гендера пользователя
         try:
@@ -268,5 +286,6 @@ class UserListApi(Resource):
 
 
 api.add_resource(UserApi, '/api/users/<int:user_id>')
+api.add_resource(UserExist, '/api/user_exist/<int:user_id>')
 api.add_resource(UserListApi, '/api/users')
 api.add_resource(UserSearch, '/api/search_dialog')
