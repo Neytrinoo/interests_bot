@@ -104,6 +104,18 @@ def search_interests(message):
     return
 
 
+# Остановка диалога
+@bot.message_handler(commands=['stop_dialog'])
+def stop_dial(message):
+    if message.from_user.id in users and 'dialog' in users[message.from_user.id]:
+        user_in_db = get_user_from_db[users[message.from_user.id]['dialog']]
+        stop_dialog(message.from_user.id, user_in_db.json())
+        del users[message.from_user.id]
+    else:
+        bot.send_message(message.from_user.id, "Доцл, что бы остановить диалог нужно быть в нём!")
+    return
+
+
 @bot.message_handler(content_types=['text'])
 def profile_pre_start(message):
     bot.send_message(message.from_user.id, "Введите комманду /reg для регистрации")
