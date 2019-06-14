@@ -5,7 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="630db3de-7312-459a-8b57-f1d49d9837bb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.db" beforeDir="false" afterPath="$PROJECT_DIR$/app.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/api tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api tests.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -15,10 +16,10 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/telegram_bot_project$api_tests.coverage" NAME="api tests Coverage Results" MODIFIED="1560176915287" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
+    <SUITE FILE_PATH="coverage/telegram_bot_project$api_tests.coverage" NAME="api tests Coverage Results" MODIFIED="1560501596286" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/telegram_bot_project$test__1_.coverage" NAME="test (1) Coverage Results" MODIFIED="1559475998714" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/telegram_bot_project$pytest_in_test_api_py.coverage" NAME="pytest in test_api.py Coverage Results" MODIFIED="1559299729144" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
-    <SUITE FILE_PATH="coverage/telegram_bot_project$flask_app.coverage" NAME="flask_app Coverage Results" MODIFIED="1560163997706" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/telegram_bot_project$flask_app.coverage" NAME="flask_app Coverage Results" MODIFIED="1560500903849" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/telegram_bot_project$features_test.coverage" NAME="features_test Coverage Results" MODIFIED="1560164402476" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/app" />
     <SUITE FILE_PATH="coverage/telegram_bot_project$test.coverage" NAME="test Coverage Results" MODIFIED="1559212208329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../SecondYearYandexLyceum/Alica project" />
   </component>
@@ -71,11 +72,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/api.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-374">
-              <caret line="38" column="30" selection-start-line="38" selection-start-column="30" selection-end-line="38" selection-end-column="30" />
+            <state relative-caret-position="354">
+              <caret line="56" column="25" selection-start-line="56" selection-start-column="13" selection-end-line="56" selection-end-column="25" />
               <folding>
                 <element signature="e#0#56#0" expanded="true" />
               </folding>
@@ -86,7 +87,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="340">
+            <state relative-caret-position="167">
               <caret line="20" column="26" selection-start-line="20" selection-start-column="6" selection-end-line="20" selection-end-column="26" />
             </state>
           </provider>
@@ -104,7 +105,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/features_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="425">
+            <state relative-caret-position="442">
               <caret line="26" column="13" selection-start-line="26" selection-start-column="13" selection-end-line="26" selection-end-column="13" />
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
@@ -113,11 +114,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/api tests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="15" column="114" selection-start-line="15" selection-start-column="114" selection-end-line="15" selection-end-column="114" />
+            <state relative-caret-position="286">
+              <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
               <folding>
                 <element signature="e#0#43#0" expanded="true" />
               </folding>
@@ -149,13 +150,13 @@
         <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/app/models.py" />
         <option value="$PROJECT_DIR$/app/features_test.py" />
-        <option value="$PROJECT_DIR$/app/api tests.py" />
         <option value="$PROJECT_DIR$/app/api.py" />
+        <option value="$PROJECT_DIR$/app/api tests.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-497" />
+    <option name="x" value="1554" />
     <option name="y" value="-8" />
     <option name="width" value="1936" />
     <option name="height" value="1056" />
@@ -165,7 +166,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -182,6 +182,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -317,8 +318,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.api tests" />
-        <item itemvalue="Python.features_test" />
         <item itemvalue="Python.flask_app" />
+        <item itemvalue="Python.features_test" />
         <item itemvalue="Python.test (1)" />
         <item itemvalue="Python tests.pytest in api tests.py" />
       </list>
@@ -349,6 +350,7 @@
       <workItem from="1560320358720" duration="599000" />
       <workItem from="1560334018376" duration="1803000" />
       <workItem from="1560414043214" duration="1243000" />
+      <workItem from="1560499226743" duration="2688000" />
     </task>
     <servers />
   </component>
@@ -364,7 +366,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="59452000" />
+    <option name="totallyTimeSpent" value="62140000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -376,15 +378,15 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49837488" visible="true" weight="0.28944564" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49837488" visible="true" weight="0.29264393" />
       <window_info id="Structure" order="1" sideWeight="0.5016251" side_tool="true" weight="0.25799572" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32502708" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32502708" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3997833" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -423,13 +425,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/flask_app.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" selection-start-line="4" selection-end-line="4" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/views.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -453,16 +448,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
+    <entry file="file://$PROJECT_DIR$/flask_app.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="4" selection-start-column="4" selection-end-column="4" />
+        <state relative-caret-position="68">
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="167">
+          <caret line="20" column="26" selection-start-line="20" selection-start-column="6" selection-end-line="20" selection-end-column="26" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/features_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
+        <state relative-caret-position="442">
           <caret line="26" column="13" selection-start-line="26" selection-start-column="13" selection-end-line="26" selection-end-column="13" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
@@ -470,29 +472,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/api tests.py">
+    <entry file="file://$PROJECT_DIR$/test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="15" column="114" selection-start-line="15" selection-start-column="114" selection-end-line="15" selection-end-column="114" />
-          <folding>
-            <element signature="e#0#43#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="20" column="26" selection-start-line="20" selection-start-column="6" selection-end-line="20" selection-end-column="26" />
+        <state>
+          <caret column="4" selection-start-column="4" selection-end-column="4" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/api.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-374">
-          <caret line="38" column="30" selection-start-line="38" selection-start-column="30" selection-end-line="38" selection-end-column="30" />
+        <state relative-caret-position="354">
+          <caret line="56" column="25" selection-start-line="56" selection-start-column="13" selection-end-line="56" selection-end-column="25" />
           <folding>
             <element signature="e#0#56#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/api tests.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="286">
+          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+          <folding>
+            <element signature="e#0#43#0" expanded="true" />
           </folding>
         </state>
       </provider>

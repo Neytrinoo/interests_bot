@@ -1,7 +1,7 @@
 from flask_restful import reqparse, abort, Api, Resource
 from app import app, db
 from app.models import User, Interests, Photo
-from flask import jsonify, request
+from flask import jsonify, request, make_response
 import time
 import werkzeug
 
@@ -54,6 +54,7 @@ class UserApi(Resource):
             'name': user.name,
             'gender': user.gender,
             'age': str(user.age),
+            'count_photos': str(len(user.photos)),
             'about_me': user.about_me,
             'about_you': user.about_you,
             'interests': ','.join([text.text for text in user.interests]),
@@ -151,6 +152,28 @@ class UserExist(Resource):
         abort_if_password_false(request.headers['password'])
         abort_if_user_not_found(user_id)
         return jsonify({'success': 'OK'})
+
+
+class UserPhotos(Resource):
+    parser = reqparse.RequestParser()
+    # number_photo - это номер фотографии, которую мы хотим получить. Т.к. нельзя отправить сразу несколько фотографий, приходится отправлять по одной
+    parser.add_argument('number_photo', required=True)
+
+    def get(self, user_id):
+        # Не зная пароль никто не сможет получить данные пользователей
+        if 'password' not in request.headers:
+            abort(400, message='Access error')
+        abort_if_password_false(request.headers['password'])
+        abort_if_user_not_found(user_id)
+
+        args = self.parser.parse_args()
+        try:
+            photo = User.query.filter_by(telegram_id=user_id).first().photos[int(args['number_photo'])].image
+        except Exception as e:
+            return jsonify({'status': 'error', 'message': 'photo number {} not found'.format(args['number_photo'])})
+        response = make_response(photo)
+        response.headers['content-type'] = 'application/octet-stream'
+        return response
 
 
 class UserSearch(Resource):  # Для поиска пользователей для диалога
@@ -287,5 +310,6 @@ class UserListApi(Resource):
 
 api.add_resource(UserApi, '/api/users/<int:user_id>')
 api.add_resource(UserExist, '/api/user_exist/<int:user_id>')
+api.add_resource(UserPhotos, '/api/user_photos/<int:user_id>')
 api.add_resource(UserListApi, '/api/users')
 api.add_resource(UserSearch, '/api/search_dialog')
