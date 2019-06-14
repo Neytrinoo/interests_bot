@@ -4,11 +4,7 @@
     <bookmark url="file://$PROJECT_DIR$/../SecondYearYandexLyceum/Alica project/flask_app.py" description="sessionStorage[user_id]['map_image_with_all_excurs..." line="729" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="630db3de-7312-459a-8b57-f1d49d9837bb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/app.db" beforeDir="false" afterPath="$PROJECT_DIR$/app.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/api tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api tests.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api.py" afterDir="false" />
-    </list>
+    <list default="true" id="630db3de-7312-459a-8b57-f1d49d9837bb" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,8 +113,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/api tests.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="286">
-              <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+            <state relative-caret-position="136">
+              <caret line="8" column="65" lean-forward="true" selection-start-line="8" selection-start-column="65" selection-end-line="8" selection-end-column="65" />
               <folding>
                 <element signature="e#0#43#0" expanded="true" />
               </folding>
@@ -350,7 +346,7 @@
       <workItem from="1560320358720" duration="599000" />
       <workItem from="1560334018376" duration="1803000" />
       <workItem from="1560414043214" duration="1243000" />
-      <workItem from="1560499226743" duration="2688000" />
+      <workItem from="1560499226743" duration="4052000" />
     </task>
     <servers />
   </component>
@@ -366,7 +362,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="62140000" />
+    <option name="totallyTimeSpent" value="63504000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -386,7 +382,7 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32502708" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32502708" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3997833" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -491,8 +487,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/api tests.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+        <state relative-caret-position="136">
+          <caret line="8" column="65" lean-forward="true" selection-start-line="8" selection-start-column="65" selection-end-line="8" selection-end-column="65" />
           <folding>
             <element signature="e#0#43#0" expanded="true" />
           </folding>
