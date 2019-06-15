@@ -55,6 +55,7 @@ class UserApi(Resource):
             'gender': user.gender,
             'age': str(user.age),
             'count_photos': str(len(user.photos)),
+            'telegram_id': str(user.telegram_id),
             'about_me': user.about_me,
             'about_you': user.about_you,
             'interests': ','.join([text.text for text in user.interests]),
@@ -195,16 +196,25 @@ class UserSearch(Resource):  # Для поиска пользователей д
             telegram_id = int(args['telegram_id'])
         except Exception as e:
             return jsonify({'error': 'telegram_id can only contain numbers'})
+
         abort_if_user_not_found(telegram_id)
 
         if args['type_dialog'] == 'search_interests_dialog':  # Если мы ищем собеседника по интересам
             start_time = time.time()
             while time.time() - start_time <= 10:
                 common_interests_with_now_user = {}  # Словарь совпадений интересов с исходным пользователем
-                now_user_interests = set(User.query.filter_by(telegram_id=telegram_id).first().interests)  # Множество интересов исходного пользователя
+                now_user = User.query.filter_by(telegram_id=telegram_id).first()
+                now_user.status_dialog = 'search_interests_dialog'
+                db.session.commit()
+                now_user_interests = set(now_user.interests)  # Множество интересов исходного пользователя
                 search_dialog_users = User.query.filter_by(status_dialog='search_interests_dialog').all()
                 for user in search_dialog_users:
+                    if user.telegram_id == now_user.telegram_id:
+                        continue
                     common_interests_with_now_user[user.telegram_id] = len(now_user_interests & set(user.interests))  # Длина пересечения множеств интересов двух пользователей
+                if not common_interests_with_now_user:
+                    continue
+                print(common_interests_with_now_user)
                 suitable_user = sorted(common_interests_with_now_user.items(), key=lambda x: x[1])[-1]  # Пользователь с наибольшим совпадением интересов
                 if User.query.filter_by(telegram_id=telegram_id).first().status_dialog == 'in_dialog':
                     return jsonify({'status': 'user in dialog', 'message': 'User {} is already in dialog'.format(str(telegram_id))})
@@ -216,10 +226,14 @@ class UserSearch(Resource):  # Для поиска пользователей д
                     return jsonify({'status': 'OK', 'telegram_id_suitable_user': suitable_user[0]})
             return jsonify({'status': 'not users', 'message': 'The search timed out for 10 seconds. At the moment there are no users with your interests'})
         elif args['type_dialog'] == 'stop_dialog':  # Если нужно прекратить диалог между двумя пользователями
-            abort_if_user_not_found(int(args['telegram_id_companion']))
-            User.query.filter_by(telegram_id=args['telegram_id_companion']).status_dialog = 'not_in_dialog'
+            try:
+                telegram_id_companion = int(args['telegram_id_companion'])
+            except Exception as e:
+                return jsonify({'error': 'telegram_id_companion can only contain numbers'})
+            abort_if_user_not_found(telegram_id_companion)
+            User.query.filter_by(telegram_id=telegram_id_companion).first().status_dialog = 'not_in_dialog'
             db.session.commit()
-            User.query.filter_by(telegram_id=args['telegram_']).status_dialog = 'not_in_dialog'
+            User.query.filter_by(telegram_id=telegram_id).first().status_dialog = 'not_in_dialog'
             db.session.commit()
             return jsonify({'status': 'OK', 'message': 'User {} and user {} are not in dialog'.format(args['telegram_id_companion'], args['telegram_id'])})
 

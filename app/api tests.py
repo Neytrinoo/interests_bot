@@ -1,4 +1,7 @@
 from requests import get, post, delete, put
+from app import db
+from app.models import User
+# User.query.filter_by(id=3).first().status_dialog = 'not_in_dialog'
 import time
 # print(get('http://localhost:5000/api/users/1').json())
 # f = open('pank.jpg', 'rb').read()
@@ -19,7 +22,7 @@ user = {
 # print(put('http://127.0.0.1:5000/api/users/23423323', headers={'password': 'yEChQDWrLCXg3zQPvJeEuY25e3EOn0'},
 #           json={'interests': 'программирование, Python, философия, биология'}).json())
 # print(get('http://127.0.0.1:5000/api/users/23423323', headers={'password': 'yEChQDWrLCXg3zQPvJeEuY25e3EOn0'}).json())
-# print(put('http://127.0.0.1:5000/api/users/23423323', json={'name': 'Не Иван'}).json())
+# print(put('http://127.0.0.1:5000/api/users/425344139', json={'name': 'Не Иван'}).json())
 # print(post('http://127.0.0.1:5000/api/users', json=user, headers={'password': 'yEChQDWrLCXg3zQPvJeEuY25e3EOn0'}).json())
 # t = time.time()
 # print(get('http://puparass.pythonanywhere.com/api/users/1231', headers={'password': 'yEChQDWrLCXg3zQPvJeEuY25e3EOn0'}).json())
