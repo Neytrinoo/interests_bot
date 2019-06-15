@@ -23,14 +23,14 @@ def is_user_in_db(telegram_id):
 
 # Функция для получения всех полей пользовательской анкеты из бд
 def get_user_from_db(telegram_id):
-    user_in_db = get(SERVER_API_URL + '/' + str(telegram_id), headers={'password': SECRET_PASSWORD})
+    user_in_db = get(SERVER_API_URL + '/' + str(telegram_id), headers={'password': SECRET_PASSWORD}).json()['user']
     return user_in_db
 
 
 def get_companion_telegram_id(telegram_id, type_dialog):
     telegram_id_friend = post(SERVER + '/search_dialog', headers={'password': SECRET_PASSWORD},
                               json={'telegram_id': str(telegram_id), 'type_dialog': type_dialog})
-    return telegram_id_friend.json()
+    return telegram_id_friend
 
 
 # Функция прерывания диалога между двумя пользователями
@@ -43,14 +43,17 @@ def stop_dialog(telegram_id1, telegram_id2):
 # 4 ПУНКТ ЗАДАНИЯ
 @bot.message_handler(commands=['show_profile'])
 def show_profile(message):
-    if message.from_user.id in users:
-        user_in_db = get_user_from_db(message.from_user.id).json()  # Зачем ты каждый раз преобразовывал к джейсону, если можно сделать это сразу, оло
+    if is_user_in_db(message.from_user.id):
+        user_in_db = get_user_from_db(message.from_user.id)  # Зачем ты каждый раз преобразовывал к джейсону, если можно сделать это сразу, оло
+        print(user_in_db)
         profile = 'Имя: ' + user_in_db['name'] + '\nПол: ' \
                   + user_in_db['gender'] + '\nКоличество прожитых годикофф: ' + user_in_db['age'] \
                   + '\nО вас: ' + user_in_db['about_me'] + '\nО желаемом собеседнике: ' \
                   + user_in_db['about_you'] + '\nВаши интересы: ' \
                   + user_in_db['interests']
         bot.send_message(message.from_user.id, profile)
+    else:
+        bot.send_message(message.from_user.id, 'Для начала добавьте анкету - /reg')
 
 
 @bot.message_handler(commands=['help'])
@@ -79,15 +82,17 @@ def search_interests(message):
     if not is_user_in_db(message.from_user.id):
         bot.send_message(message.from_user.id, 'Сначала вам нужно добавить анкету. Для этого напишите /reg')
         return
-    if 'dialog' in users[message.from_user.id]:
+    if message.from_user.id in users and 'dialog' in users[message.from_user.id]:
         bot.send_message(message.from_user.id, 'Вы уже в диалоге, оло')
-    telegram_id_friend = get_companion_telegram_id(user_in_db.json()['telegram_id'], 'search_interests_dialog').json()
+    telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_interests_dialog')
+    print(telegram_id_friend)
     if 'status' in telegram_id_friend and telegram_id_friend['status'] == 'OK':
         mes = 'Собеседник в абсолютности своей найден. Теперь вы можете общаться. Ах, да, вот его анкета\n'
+        users[message.from_user.id] = {}
         users[message.from_user.id]['dialog'] = telegram_id_friend['telegram_id_suitable_user']
         users[telegram_id_friend['telegram_id_suitable_user']]['dialog'] = message.from_user.id
         bot.send_message(message.from_user.id, mes + str(get_user_from_db(telegram_id_friend['telegram_id_suitable_user']).json()))
-        bot.send_message(int(telegram_id_friend['telegram_id_suitable_user']), mes + str(user_in_db.json()))
+        bot.send_message(int(telegram_id_friend['telegram_id_suitable_user']), mes + str(user_in_db))
         # 3 ПУНКТ ЗАДАНИЯ
         profile = 'Никнейм товарища: ' + telegram_id_friend['name'] + '\nГендер нашего партийного друга: ' \
                   + telegram_id_friend['gender'] + '\nКоличество лет, проведенных на заводе:' + telegram_id_friend['age'] \
@@ -108,8 +113,8 @@ def search_interests(message):
 @bot.message_handler(commands=['stop_dialog'])
 def stop_dial(message):
     if message.from_user.id in users and 'dialog' in users[message.from_user.id]:
-        user_in_db = get_user_from_db[users[message.from_user.id]['dialog']]
-        stop_dialog(message.from_user.id, user_in_db.json())
+        user_in_db = get_user_from_db(users[message.from_user.id]['dialog'])
+        stop_dialog(message.from_user.id, user_in_db['telegram_id'])
         del users[message.from_user.id]
     else:
         bot.send_message(message.from_user.id, "Доцл, что бы остановить диалог нужно быть в нём!")
@@ -125,7 +130,6 @@ def profile_pre_start(message):
 # 1 ПУНКТ ЗАДАНИЯ
 def profile_pre_start(message):
     if is_user_in_db(message.from_user.id) is True:
-
         if message.from_user.id in users and 'dialog' in users[message.from_user.id]:
             id_friend = users[message.from_user.id]['dialog']
             bot.send_message(id_friend, message.text)
