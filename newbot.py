@@ -30,6 +30,30 @@ def render_profile(user):
     return profile
 
 
+# Получение одной фотографии пользователя по номеру фотографии
+async def get_user_photo(telegram_id, number_photo):
+    with get(SERVER + '/user_photos/' + str(telegram_id), headers={'password': SECRET_PASSWORD}, json={'number_photo': str(number_photo)}) as response:
+        users[telegram_id]['photos'].append(response.content)
+
+
+# Асинхронное получение фотографии пользователя по его телеграм айди. Нужно указать количество фотографий.
+# Чтобы это кол-во получить, нужно получить пользователя из бд и взять из ответа поле count_photos
+# Полученные с сервера фотографии будут храниться в словаре users[telegram_id]['photos'] в массиве
+async def get_user_photos(telegram_id, count_photos):
+    tasks = []
+    users[telegram_id]['photos'] = []
+    for i in range(count_photos):
+        task = asyncio.create_task(get_user_photo(telegram_id, i))
+        tasks.append(task)
+    await asyncio.gather(*tasks)
+
+
+# Редактирование полей пользовательской анкеты. field_name - название поля, которое надо отредактировать, field_value - значение для изменения поля
+def edit_profile(telegram_id, field_name, field_value):
+    res = put(SERVER + '/users/' + str(telegram_id), headers={'password': SECRET_PASSWORD}, json={field_name: field_value}).json()
+    return res
+
+
 # Функция для получения всех полей пользовательской анкеты из бд
 def get_user_from_db(telegram_id):
     user_in_db = get(SERVER_API_URL + '/' + str(telegram_id), headers={'password': SECRET_PASSWORD}).json()['user']
@@ -349,10 +373,6 @@ def register_user(user):
     print('Добавление пользователя:', post(SERVER_API_URL, headers={'password': SECRET_PASSWORD}, json=new_user).json())
     if user['photos']:  # Если у пользователя есть фотографии, то добавляем их
         asyncio.run(add_user_photos(user['telegram_id'], user['photos']))
-
-
-# def search_brother(message):
-#     users[message.from_user.id]['dialog']
 
 
 if __name__ == "__main__":
