@@ -5,11 +5,24 @@ from telebot import types
 
 token = '797488097:AAFIilpcv61tuQ7kFDtZHZyuPpcE8KuSI88'
 SECRET_PASSWORD = 'yEChQDWrLCXg3zQPvJeEuY25e3EOn0'
-SERVER_API_URL = 'http://127.0.0.1:5000/api/users'
-SERVER = 'http://127.0.0.1:5000/api'
+SERVER_API_URL = 'http://puparass.pythonanywhere.com/api/users'
+SERVER = 'http://puparass.pythonanywhere.com/api'
 bot = telebot.TeleBot(token)
-
 users = {}
+
+# Клавиатурка редактирования полей анкеты
+EDIT_PROFILE_KEYBOARD = types.ReplyKeyboardMarkup()
+item_button1 = types.KeyboardButton('Никнейм')
+item_button2 = types.KeyboardButton('Пол')
+item_button3 = types.KeyboardButton('Возраст')
+item_button4 = types.KeyboardButton('О вас')
+item_button5 = types.KeyboardButton('О собеседнике')
+item_button6 = types.KeyboardButton('Интересы')
+item_button7 = types.KeyboardButton('Фото')
+item_button8 = types.KeyboardButton('Прекратить редактировние')
+EDIT_PROFILE_KEYBOARD.row(item_button1, item_button2, item_button3)
+EDIT_PROFILE_KEYBOARD.row(item_button4, item_button5, item_button6)
+EDIT_PROFILE_KEYBOARD.row(item_button7, item_button8)
 
 
 # Функция проверки, есть ли пользователь в бд или нет. Позже реализую такую функцию на стороне api, пока что мы получаем все данные о пользователе.
@@ -109,7 +122,7 @@ def profile_start(message):
 
 
 # Команда поиска собеседника по интересам
-@bot.message_handler(commands=['search_interests'], content_types=["text", "sticker", "pinned_message", "photo", "audio"])
+@bot.message_handler(commands=['search_interests'])
 def search_interests(message):
     if not is_user_in_db(message.from_user.id):
         bot.send_message(message.from_user.id, 'Сначала вам нужно добавить анкету. Для этого напишите /reg')
@@ -145,147 +158,9 @@ def search_interests(message):
 def edit_prof(message):
     if message.from_user.id in users and 'dialog' in users[message.from_user.id]:
         bot.send_message(message.from_user.id, "БИСТРА ВИШЕЛ С ДИЛОГА!")
-    if message.from_user.id in users:
-        markup = types.ReplyKeyboardMarkup()
-        item_button1 = types.KeyboardButton('Никнейм')
-        item_button2 = types.KeyboardButton('Пол')
-        item_button3 = types.KeyboardButton('Возраст')
-        item_button4 = types.KeyboardButton('О вас')
-        item_button5 = types.KeyboardButton('О собеседнике')
-        item_button6 = types.KeyboardButton('Интересы')
-        item_button7 = types.KeyboardButton('Фото')
-        item_button8 = types.KeyboardButton('Прекратить редактировние')
-        markup.row(item_button1, item_button2, item_button3)
-        markup.row(item_button4, item_button5, item_button6)
-        markup.row(item_button7, item_button8)
-        # markup = types.ForceReply(selective=False)
-        bot.send_message(message.from_user.id, "Что вы хотите изменить:", reply_markup=markup)
+    if is_user_in_db(message.from_user.id):
+        bot.send_message(message.from_user.id, "Что вы хотите изменить:", reply_markup=EDIT_PROFILE_KEYBOARD)
         bot.register_next_step_handler(message, check_answer)
-
-
-@bot.message_handler(func=lambda message: True, content_types=['text'])
-def check_answer(message):
-
-    keyboard_hider = types.ReplyKeyboardRemove()
-
-    if message.text == 'Никнейм':
-        bot.send_message(message.from_user.id, "Новый желаемый никнейм:", reply_markup=keyboard_hider)
-        bot.register_next_step_handler(message, check_answer_name)
-    elif message.text == 'Пол':
-        bot.send_message(message.from_user.id, "Новый желаемый пол:", reply_markup=keyboard_hider)
-        bot.register_next_step_handler(message, check_answer_gender)
-    elif message.text == 'Возраст':
-        bot.send_message(message.from_user.id, "Новый желаемый возраст:", reply_markup=keyboard_hider)
-        bot.register_next_step_handler(message, check_answer_age)
-    elif message.text == 'О вас':
-        bot.send_message(message.from_user.id, "Изменение биографии:", reply_markup=keyboard_hider)
-        bot.register_next_step_handler(message, check_answer_about_me)
-    elif message.text == 'О собеседнике':
-        bot.send_message(message.from_user.id, "Изменение желаний о собеседнике:", reply_markup=keyboard_hider)
-        bot.register_next_step_handler(message, check_answer_about_you)
-    elif message.text == 'Интересы':
-        bot.send_message(message.from_user.id, "Новые интересы:", reply_markup=keyboard_hider)
-        bot.register_next_step_handler(message, check_answer_interests)
-    elif message.text == 'Фото':
-        keyboard = types.ReplyKeyboardMarkup(row_width=2)
-        keyboard.add(types.KeyboardButton('/skip_photos'), types.KeyboardButton('/stop_photos'))
-        bot.send_message(message.from_user.id,
-                         'Ваши фотографии? (Максимум 4). Если вы не хотите добавлять фотографии, напишите /skip_photos \n Если вы добавили нужные вам фотографии,'
-                         'напишите /stop_photos', reply_markup=keyboard)
-        bot.register_next_step_handler(message, profile_get_photos)
-    elif message.text == 'Прекратить редактировние':
-        bot.send_message(message.from_user.id, "Oh shit here we go again", reply_markup=keyboard_hider)
-        # HELP: Куда эта запупа должна вести?
-        # bot.register_next_step_handler(message, XZ_link(Главная менюшка))
-    else:
-        bot.send_message(message.from_user.id, 'Так дело не пойдет')
-        return
-    return
-
-
-@bot.message_handler(func=lambda message: True, content_types=['text'])
-def check_answer_name(message):
-    if len(message.text) >= 50:
-        bot.send_message(message.from_user.id, 'Введите ваше настоящее имя')
-        bot.register_next_step_handler(message, check_answer_name)
-        return
-    edit_profile(message.from_user.id, 'name', message.text)
-    bot.register_next_step_handler(message, edit_prof)
-
-
-@bot.message_handler(func=lambda message: True, content_types=['text'])
-def check_answer_gender(message):
-    keyboard = types.ReplyKeyboardMarkup(row_width=2)
-    keyboard.add(types.KeyboardButton('Мужской'), types.KeyboardButton('Женский'))
-    bot.send_message(message.from_user.id, "Какой у вас пол?", reply_markup=keyboard)
-    types.ReplyKeyboardRemove(selective=False)
-
-
-@bot.message_handler(func=lambda message: True, content_types=['text'])
-def check_answer_gender_2(message):
-    btn_sex = message.text.lower()
-    if btn_sex == "мужской":
-        active_sex = "male"
-        edit_profile(message.from_user.id, 'gender', active_sex)
-        types.ReplyKeyboardRemove(selective=True)
-        bot.register_next_step_handler(message, edit_prof)
-    elif btn_sex == "женский":
-        active_sex = "female"
-        edit_profile(message.from_user.id, 'gender', active_sex)
-        types.ReplyKeyboardRemove(selective=True)
-        bot.register_next_step_handler(message, edit_prof)
-    else:
-        bot.send_message(message.from_user.id, 'Введите верные данные. Какой у вас пол?')
-        bot.register_next_step_handler(message, check_answer_gender_2)
-        return check_answer_gender_2
-
-
-@bot.message_handler(func=lambda message: True, content_types=['text'])
-def check_answer_age(message):
-    try:
-        if int(message.text) >= 70 or int(message.text) <= 10:
-            bot.send_message(message.from_user.id, 'Введите ваш настоящий возраст')
-            bot.register_next_step_handler(message, check_answer_age)
-            return
-        edit_profile(message.from_user.id, 'age', message.text)
-        bot.register_next_step_handler(message, edit_prof)
-    except ValueError:
-        bot.send_message(message.from_user.id, 'Цифрами, пожалуйста')
-        bot.register_next_step_handler(message, check_answer_age)
-        return
-
-
-@bot.message_handler(func=lambda message: True, content_types=['text'])
-def check_answer_about_me(message):
-    if len(message.text) >= 1000:
-        bot.send_message(message.from_user.id, 'Длина биографии не может превышать 1000 символов')
-        bot.register_next_step_handler(message, check_answer_about_me)
-        return check_answer_about_me
-    edit_profile(message.from_user.id, 'about_me', message.text)
-    bot.register_next_step_handler(message, edit_prof)
-
-
-@bot.message_handler(func=lambda message: True, content_types=['text'])
-def check_answer_about_you(message):
-    if len(message.text) >= 1000:
-        bot.send_message(message.from_user.id, 'Длина биографии не может превышать 1000 символов')
-        bot.register_next_step_handler(message, check_answer_about_you)
-        return check_answer_about_you
-    edit_profile(message.from_user.id, 'about_you', message.text)
-    bot.register_next_step_handler(message, edit_prof)
-
-
-@bot.message_handler(func=lambda message: True, content_types=['text'])
-def check_answer_interests(message):
-    p_interests = message.text.split(',')
-    for i in range(len(p_interests)):
-        p_interests[i] = p_interests[i].lower().lstrip().rstrip()
-        if len(p_interests[i]) >= 256:
-            bot.send_message(message.from_user.id, 'Длина одного из интересов не может превышать 256 символов')
-            bot.register_next_step_handler(message, check_answer_interests)
-            return check_answer_interests
-    edit_profile(message.from_user.id, 'interests', message.text)
-    bot.register_next_step_handler(message, edit_prof)
 
 
 # @bot.message_handler(content_types=['photo', 'text'])
@@ -342,9 +217,9 @@ def stop_dial(message):
         stop_dialog(message.from_user.id, users[message.from_user.id]['dialog'])
         bot.send_message(message.from_user.id, 'Диалог остановлен. Чтобы начать поиск заново, напишите /search_interests')
         bot.send_message(users[message.from_user.id]['dialog'], 'Диалог остановлен. Чтобы начать поиск заново, напишите /search_interests')
-        print(users)
         del users[users[message.from_user.id]['dialog']]
         del users[message.from_user.id]
+        print(users)
     else:
         bot.send_message(message.from_user.id, "Доцл, что бы остановить диалог нужно быть в нём!")
         return
@@ -384,13 +259,22 @@ def profile_stop_photos(message):
     bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, ура!', reply_markup=keyboard_hider)
 
 
-@bot.message_handler(content_types=['text'])
+@bot.message_handler(content_types=["text", "sticker", "pinned_message", "photo", "audio"])
 # 1 ПУНКТ ЗАДАНИЯ
 def profile_pre_start(message):
     if is_user_in_db(message.from_user.id) is True:
         if message.from_user.id in users and 'dialog' in users[message.from_user.id]:
             id_friend = users[message.from_user.id]['dialog']
-            bot.send_message(id_friend, message.text)
+            if message.content_type == 'text':
+                bot.send_message(id_friend, message.text)
+            elif message.content_type == 'sticker':
+                bot.send_message(id_friend, message.sticker)
+            elif message.content_type == 'pinned_message':
+                bot.send_message(id_friend, message.pinned_message)
+            elif message.content_type == 'photo':
+                bot.send_message(id_friend, message.photo)
+            elif message.content_type == 'audio':
+                bot.send_message(id_friend, message.audio)
         else:
             bot.send_message(message.from_user.id, 'Вам нужно написать /search_interests чтобы найти собеседника со схожими с вашими интересами')
     else:
@@ -517,7 +401,7 @@ def profile_get_photos(message):
         print(len(users[message.from_user.id]['photos']))
 
     except Exception as e:
-        btn_photo = message.text.lower()
+        btn_photo = message.text.lower().lstrip().rstrip()
         print(btn_photo)
         if btn_photo == '/skip_photos':
             bot.send_message(message.from_user.id, 'Вы ещё можете добавить фотографии в любой момент',
@@ -544,6 +428,185 @@ def profile_get_photos(message):
             return profile_get_photos
 
 
+@bot.message_handler(func=lambda message: True, content_types=['text'])
+def check_answer(message):
+    keyboard_hider = types.ReplyKeyboardRemove()
+    command = message.text.lower().rstrip().lstrip()
+    if command == 'никнейм':
+        bot.send_message(message.from_user.id, "Новый желаемый никнейм:", reply_markup=keyboard_hider)
+        bot.register_next_step_handler(message, check_answer_name)
+    elif command == 'пол':
+        keyboard = types.ReplyKeyboardMarkup(row_width=2)
+        keyboard.add(types.KeyboardButton('Мужской'), types.KeyboardButton('Женский'))
+        bot.send_message(message.from_user.id, "Какой у вас пол?", reply_markup=keyboard)
+        types.ReplyKeyboardRemove(selective=False)
+        bot.register_next_step_handler(message, check_answer_gender)
+    elif command == 'возраст':
+        bot.send_message(message.from_user.id, "Новый желаемый возраст:", reply_markup=keyboard_hider)
+        bot.register_next_step_handler(message, check_answer_age)
+    elif command == 'о вас':
+        bot.send_message(message.from_user.id, "Изменение биографии:", reply_markup=keyboard_hider)
+        bot.register_next_step_handler(message, check_answer_about_me)
+    elif command == 'о собеседнике':
+        bot.send_message(message.from_user.id, "Изменение желаний о собеседнике:", reply_markup=keyboard_hider)
+        bot.register_next_step_handler(message, check_answer_about_you)
+    elif command == 'интересы':
+        bot.send_message(message.from_user.id, "Новые интересы (предыдущие будут удалены):", reply_markup=keyboard_hider)
+        bot.register_next_step_handler(message, check_answer_interests)
+    elif command == 'фото':
+        keyboard = types.ReplyKeyboardMarkup(row_width=2)
+        keyboard.add(types.KeyboardButton('Да'), types.KeyboardButton('Нет'))
+        users[message.from_user.id] = {}
+        users[message.from_user.id]['photos'] = []
+        bot.send_message(message.from_user.id,
+                         'Новые фотографии (Максимум 4). Предыдущие будут удалены. Начать добавление фотографий?', reply_markup=keyboard)
+        bot.register_next_step_handler(message, check_answer_photo)
+    elif command == 'прекратить редактировние':
+        bot.send_message(message.from_user.id, "Oh shit here we go again", reply_markup=keyboard_hider)
+        # HELP: Куда эта запупа должна вести?
+        # bot.register_next_step_handler(message, XZ_link(Главная менюшка))
+    else:
+        bot.send_message(message.from_user.id, 'Так дело не пойдет')
+        return
+    return
+
+
+@bot.message_handler(func=lambda message: True, content_types=['text', 'photo'])
+def check_answer_photo(message):
+    try:
+        keyboard_hider = types.ReplyKeyboardRemove()
+        file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
+        downloaded_file = bot.download_file(file_info.file_path)
+        if len(users[message.from_user.id]['photos']) <= 3:
+            users[message.from_user.id]['photos'].append(downloaded_file)
+            if len(users[message.from_user.id]['photos']) > 3:
+                bot.send_message(message.from_user.id, 'Вы успешно добавили 4 фотографии. Фотографии успешно отредактированы!', reply_markup=EDIT_PROFILE_KEYBOARD)
+                register_user(users[message.from_user.id])
+                return
+            bot.send_message(message.from_user.id, 'Фото номер ' + str(len(users[message.from_user.id]['photos'])) + ' добавлено')
+        else:
+            bot.send_message(message.from_user.id, '4 первые фотографии были добавлены, но больше вы добавить не можете.')
+        print(len(users[message.from_user.id]['photos']))
+    except Exception as e:
+        command = message.text.lower().rstrip().lstrip()
+        if command == 'да':
+            keyboard = types.ReplyKeyboardMarkup(row_width=2)
+            keyboard.add(types.KeyboardButton('/skip_photos'), types.KeyboardButton('/stop_photos'))
+            users[message.from_user.id] = {}
+            users[message.from_user.id]['photos'] = []
+            # <Тут должна быть строчка с удалением фотографий на сервере. Пока в апи нет такой возможности, но вскоре она будет>
+            bot.send_message(message.from_user.id, 'Начинайте добавлять фотографии (предыдущие удалены). Если вы не хотите добавлять фотографии, напишите /skip_photos \n '
+                                                   'Если вы добавили нужные вам фотографии, напишите /stop_photos', reply_markup=keyboard)
+        elif command == 'нет':
+            bot.send_message(message.from_user.id, 'Ну не хотите, как хотите', reply_markup=EDIT_PROFILE_KEYBOARD)
+            bot.register_next_step_handler(message, check_answer)
+        elif command == '/skip_photos':
+            bot.send_message(message.from_user.id, 'Вы ещё можете добавить фотографии в любой момент',
+                             reply_markup=EDIT_PROFILE_KEYBOARD)
+            bot.register_next_step_handler(message, check_answer)
+        elif command == '/stop_photos':
+            if len(users[message.from_user.id]['photos']) >= 1:
+                bot.send_message(message.from_user.id, 'Вы ещё можете пополнить фотографии вашего профиля в любой момент',
+                                 reply_markup=EDIT_PROFILE_KEYBOARD)
+                register_user(users[message.from_user.id])
+                bot.register_next_step_handler(message, check_answer)
+            else:
+                bot.send_message(message.from_user.id,
+                                 'Для остановки подачи фотографий вам нужно иметь хотя бы больше одной фотографии')
+                bot.register_next_step_handler(message, check_answer_photo)
+        else:
+            bot.send_message(message.from_user.id, 'Да или нет?')
+            bot.register_next_step_handler(message, check_answer_photo)
+
+
+@bot.message_handler(func=lambda message: True, content_types=['text'])
+def check_answer_name(message):
+    if len(message.text) >= 50:
+        bot.send_message(message.from_user.id, 'Введите ваше настоящее имя')
+        bot.register_next_step_handler(message, check_answer_name)
+        return
+    edit_profile(message.from_user.id, 'name', message.text)
+    bot.send_message(message.from_user.id, 'Имя успешно изменено', reply_markup=EDIT_PROFILE_KEYBOARD)
+    bot.register_next_step_handler(message, check_answer)
+
+
+# @bot.message_handler(func=lambda message: True, content_types=['text'])
+# def check_answer_gender(message):
+#     keyboard = types.ReplyKeyboardMarkup(row_width=2)
+#     keyboard.add(types.KeyboardButton('Мужской'), types.KeyboardButton('Женский'))
+#     bot.send_message(message.from_user.id, "Какой у вас пол?", reply_markup=keyboard)
+#     types.ReplyKeyboardRemove(selective=False)
+
+
+@bot.message_handler(func=lambda message: True, content_types=['text'])
+def check_answer_gender(message):
+    btn_sex = message.text.lower()
+    if btn_sex == "мужской":
+        active_sex = "male"
+        edit_profile(message.from_user.id, 'gender', active_sex)
+        bot.send_message(message.from_user.id, 'Пол успешно изменен на мужской', reply_markup=EDIT_PROFILE_KEYBOARD)
+        bot.register_next_step_handler(message, check_answer)
+    elif btn_sex == "женский":
+        active_sex = "female"
+        edit_profile(message.from_user.id, 'gender', active_sex)
+        bot.send_message(message.from_user.id, 'Пол успешно изменен на женский', reply_markup=EDIT_PROFILE_KEYBOARD)
+        bot.register_next_step_handler(message, check_answer)
+    else:
+        bot.send_message(message.from_user.id, 'Введите верные данные. Какой у вас пол?')
+        bot.register_next_step_handler(message, check_answer_gender)
+
+
+@bot.message_handler(func=lambda message: True, content_types=['text'])
+def check_answer_age(message):
+    try:
+        if int(message.text) >= 70 or int(message.text) <= 10:
+            bot.send_message(message.from_user.id, 'Введите ваш настоящий возраст')
+            bot.register_next_step_handler(message, check_answer_age)
+            return
+        edit_profile(message.from_user.id, 'age', message.text)
+        bot.send_message(message.from_user.id, 'Возраст успешно изменен', reply_markup=EDIT_PROFILE_KEYBOARD)
+        bot.register_next_step_handler(message, check_answer)
+    except ValueError:
+        bot.send_message(message.from_user.id, 'Цифрами, пожалуйста')
+        bot.register_next_step_handler(message, check_answer_age)
+        return
+
+
+@bot.message_handler(func=lambda message: True, content_types=['text'])
+def check_answer_about_me(message):
+    if len(message.text) >= 1000:
+        bot.send_message(message.from_user.id, 'Длина биографии не может превышать 1000 символов')
+        bot.register_next_step_handler(message, check_answer_about_me)
+    edit_profile(message.from_user.id, 'about_me', message.text)
+    bot.send_message(message.from_user.id, 'Ваша биография успешно изменена', reply_markup=EDIT_PROFILE_KEYBOARD)
+    bot.register_next_step_handler(message, check_answer)
+
+
+@bot.message_handler(func=lambda message: True, content_types=['text'])
+def check_answer_about_you(message):
+    if len(message.text) >= 1000:
+        bot.send_message(message.from_user.id, 'Длина инфы о собеседнике не может превышать 1000 символов')
+        bot.register_next_step_handler(message, check_answer_about_you)
+        return check_answer_about_you
+    edit_profile(message.from_user.id, 'about_you', message.text)
+    bot.send_message(message.from_user.id, 'Инфа о желаемом собеседнике успешно изменена', reply_markup=EDIT_PROFILE_KEYBOARD)
+    bot.register_next_step_handler(message, check_answer)
+
+
+@bot.message_handler(func=lambda message: True, content_types=['text'])
+def check_answer_interests(message):
+    p_interests = message.text.split(',')
+    for i in range(len(p_interests)):
+        p_interests[i] = p_interests[i].lower().lstrip().rstrip()
+        if len(p_interests[i]) >= 256:
+            bot.send_message(message.from_user.id, 'Длина одного из интересов не может превышать 256 символов')
+            bot.register_next_step_handler(message, check_answer_interests)
+            return check_answer_interests
+    edit_profile(message.from_user.id, 'interests', message.text)
+    bot.send_message(message.from_user.id, 'Ваши интересы успешно изменены', reply_markup=EDIT_PROFILE_KEYBOARD)
+    bot.register_next_step_handler(message, check_answer)
+
+
 # Добавление фотографии для пользовательской анкеты
 async def add_photo(telegram_id, photo):
     img = {'file': photo}
@@ -563,11 +626,12 @@ async def add_user_photos(telegram_id, photos):
 
 # Добавление анкеты пользователя и запуск добавления фотографий, если они есть
 def register_user(user):
-    new_user = {}
-    for key, value in user.items():
-        if key != 'photos':
-            new_user[key] = value
-    print('Добавление пользователя:', post(SERVER_API_URL, headers={'password': SECRET_PASSWORD}, json=new_user).json())
+    if not is_user_in_db(user['telegram_id']):
+        new_user = {}
+        for key, value in user.items():
+            if key != 'photos':
+                new_user[key] = value
+        print('Добавление пользователя:', post(SERVER_API_URL, headers={'password': SECRET_PASSWORD}, json=new_user).json())
     if user['photos']:  # Если у пользователя есть фотографии, то добавляем их
         asyncio.run(add_user_photos(user['telegram_id'], user['photos']))
 
