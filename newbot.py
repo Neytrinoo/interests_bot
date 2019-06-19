@@ -130,7 +130,9 @@ def search_interests(message):
     user_in_db = get_user_from_db(message.from_user.id)
 
     if message.from_user.id in users and 'dialog' in users[message.from_user.id]:
-        bot.send_message(message.from_user.id, 'Вы уже в диалоге, оло')
+        bot.send_message(message.from_user.id, 'Вы уже в диалоге, оло. Надоело? Напишите /stop_dialog')
+    else:
+        bot.send_message(message.from_user.id, 'Идет поиск собеседника. Это займет максимум 10 секунд')
     telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_interests_dialog').json()
     print(telegram_id_friend)
     if 'status' in telegram_id_friend and telegram_id_friend['status'] == 'OK':
@@ -142,9 +144,9 @@ def search_interests(message):
         bot.send_message(int(telegram_id_friend['telegram_id_suitable_user']), mes + render_profile(user_in_db))
         companion_profile = get_user_from_db(telegram_id_friend['telegram_id_suitable_user'])
 
-        bot.send_message(message.from_user.id, render_profile(companion_profile))
-
-    elif telegram_id_friend['status'] == 'user in dialog':  # Если пользователь уже в диалоге(такое может быть, и сервер за этим следит), то ничего не делаем.
+        bot.send_message(message.from_user.id, mes + render_profile(companion_profile))
+    # Если пользователь уже в диалоге(такое может быть, и сервер за этим следит), то ничего не делаем.
+    elif telegram_id_friend['status'] == 'user in dialog' or (message.from_user.id in users and 'dialog' in users[message.from_user.id]):
         # Пользователь получит сообщение о том, что он в диалоге от другого пользователя
         pass
     else:
@@ -259,7 +261,7 @@ def profile_stop_photos(message):
     bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, ура!', reply_markup=keyboard_hider)
 
 
-@bot.message_handler(content_types=["text", "sticker", "pinned_message", "photo", "audio"])
+@bot.message_handler(content_types=["text", "sticker", "pinned_message", "photo", "audio", "voice"])
 # 1 ПУНКТ ЗАДАНИЯ
 def profile_pre_start(message):
     if is_user_in_db(message.from_user.id) is True:
@@ -267,9 +269,16 @@ def profile_pre_start(message):
             id_friend = users[message.from_user.id]['dialog']
             if message.content_type == 'text':
                 bot.send_message(id_friend, message.text)
-            else:
-                # bot.send_chat_action(id_friend, message.photo)
-                pass
+            elif message.content_type == 'sticker':
+                bot.send_sticker(id_friend, message.sticker.file_id)
+            elif message.content_type == 'photo':
+                bot.send_photo(id_friend, message.photo[-1].file_id)
+            elif message.content_type == 'audio':
+                print(message.audio)
+                bot.send_audio(id_friend, message.audio.file_id)
+            elif message.content_type == 'voice':
+                print(message.voice)
+                bot.send_voice(id_friend, message.voice.file_id)
         else:
             bot.send_message(message.from_user.id, 'Вам нужно написать /search_interests чтобы найти собеседника со схожими с вашими интересами')
     else:
