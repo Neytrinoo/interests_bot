@@ -142,7 +142,7 @@ def search_interests(message):
         bot.send_message(int(telegram_id_friend['telegram_id_suitable_user']), mes + render_profile(user_in_db))
         companion_profile = get_user_from_db(telegram_id_friend['telegram_id_suitable_user'])
 
-        bot.send_chat_action(message.from_user.id, render_profile(companion_profile))
+        bot.send_message(message.from_user.id, render_profile(companion_profile))
 
     elif telegram_id_friend['status'] == 'user in dialog':  # Если пользователь уже в диалоге(такое может быть, и сервер за этим следит), то ничего не делаем.
         # Пользователь получит сообщение о том, что он в диалоге от другого пользователя
@@ -267,14 +267,9 @@ def profile_pre_start(message):
             id_friend = users[message.from_user.id]['dialog']
             if message.content_type == 'text':
                 bot.send_message(id_friend, message.text)
-            elif message.content_type == 'sticker':
-                bot.send_message(id_friend, message.sticker)
-            elif message.content_type == 'pinned_message':
-                bot.send_message(id_friend, message.pinned_message)
-            elif message.content_type == 'photo':
-                bot.send_message(id_friend, message.photo)
-            elif message.content_type == 'audio':
-                bot.send_message(id_friend, message.audio)
+            else:
+                # bot.send_chat_action(id_friend, message.photo)
+                pass
         else:
             bot.send_message(message.from_user.id, 'Вам нужно написать /search_interests чтобы найти собеседника со схожими с вашими интересами')
     else:
