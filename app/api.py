@@ -42,6 +42,21 @@ class UserApi(Resource):
     parser.add_argument('about_me', required=False)
     parser.add_argument('about_you', required=False)
 
+    def delete(self, user_id):
+        try:
+            if 'password' not in request.headers:
+                abort(400, message='Access error')
+            abort_if_password_false(request.headers['password'])
+
+            abort_if_user_not_found(user_id)
+            user = User.query.filter_by(telegram_id=user_id).first()
+
+            user.photos = []
+            db.session.commit()
+            return jsonify({'status': 'OK', 'message': 'All photos were deleted'})
+        except Exception as e:
+            return jsonify({'status': 'error', 'message': 'An error occurred'})
+
     def get(self, user_id):
         # Не зная пароль никто не сможет получить данные пользователей
         if 'password' not in request.headers:
@@ -201,10 +216,10 @@ class UserSearch(Resource):  # Для поиска пользователей д
 
         if args['type_dialog'] == 'search_interests_dialog':  # Если мы ищем собеседника по интересам
             start_time = time.time()
+            now_user = User.query.filter_by(telegram_id=telegram_id).first()
+            now_user.status_dialog = 'search_interests_dialog'
             while time.time() - start_time <= 10:
                 common_interests_with_now_user = {}  # Словарь совпадений интересов с исходным пользователем
-                now_user = User.query.filter_by(telegram_id=telegram_id).first()
-                now_user.status_dialog = 'search_interests_dialog'
                 db.session.commit()
                 now_user_interests = set(now_user.interests)  # Множество интересов исходного пользователя
                 search_dialog_users = User.query.filter_by(status_dialog='search_interests_dialog').all()
@@ -224,6 +239,8 @@ class UserSearch(Resource):  # Для поиска пользователей д
                     User.query.filter_by(telegram_id=telegram_id).first().status_dialog = 'in_dialog'
                     db.session.commit()
                     return jsonify({'status': 'OK', 'telegram_id_suitable_user': suitable_user[0]})
+            now_user.status_dialog = 'not_in_dialog'
+            db.session.commit()
             return jsonify({'status': 'not users', 'message': 'The search timed out for 10 seconds. At the moment there are no users with your interests'})
         elif args['type_dialog'] == 'stop_dialog':  # Если нужно прекратить диалог между двумя пользователями
             try:
