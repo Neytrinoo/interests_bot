@@ -239,8 +239,9 @@ class UserSearch(Resource):  # Для поиска пользователей д
                     User.query.filter_by(telegram_id=telegram_id).first().status_dialog = 'in_dialog'
                     db.session.commit()
                     return jsonify({'status': 'OK', 'telegram_id_suitable_user': suitable_user[0]})
-            now_user.status_dialog = 'not_in_dialog'
-            db.session.commit()
+            if now_user.status_dialog != 'in_dialog':
+                now_user.status_dialog = 'not_in_dialog'
+                db.session.commit()
             return jsonify({'status': 'not users', 'message': 'The search timed out for 10 seconds. At the moment there are no users with your interests'})
         elif args['type_dialog'] == 'stop_dialog':  # Если нужно прекратить диалог между двумя пользователями
             try:
