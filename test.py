@@ -22,5 +22,9 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
-    print('asf')
+    # asyncio.run(main())
+    a = ''
+    if a:
+        print('True')
+    else:
+        print('False')

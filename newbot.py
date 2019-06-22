@@ -73,9 +73,14 @@ def get_user_from_db(telegram_id):
     return user_in_db
 
 
-def get_companion_telegram_id(telegram_id, type_dialog):
-    telegram_id_friend = post(SERVER + '/search_dialog', headers={'password': SECRET_PASSWORD},
-                              json={'telegram_id': str(telegram_id), 'type_dialog': type_dialog})
+# Функция поиска собеседника. Тут осуществляется поиск как по интересам, так и по полу
+def get_companion_telegram_id(telegram_id, type_dialog, search_gender=''):
+    if search_gender:
+        telegram_id_friend = post(SERVER + '/search_dialog', headers={'password': SECRET_PASSWORD}, json={'telegram_id': str(telegram_id), 'type_dialog': type_dialog,
+                                                                                                          'search_gender': search_gender})
+    else:
+        telegram_id_friend = post(SERVER + '/search_dialog', headers={'password': SECRET_PASSWORD},
+                                  json={'telegram_id': str(telegram_id), 'type_dialog': type_dialog})
     return telegram_id_friend
 
 
@@ -84,6 +89,44 @@ def stop_dialog(telegram_id1, telegram_id2):
     stop = post(SERVER + '/search_dialog', headers={'password': SECRET_PASSWORD},
                 json={'telegram_id': str(telegram_id1), 'telegram_id_companion': str(telegram_id2), 'type_dialog': 'stop_dialog'})
     return stop.json()
+
+
+# Функция поиска собеседника. Не важно, по интересам или по полу. Эти параметры передаются в type_dialog. Вынес это в отдельную функцию, т.к. иначе бы код дублировался три раза:
+# /search_interests, /search_male и /search_female
+def search_user(message, type_dialog, error_message):
+    if not is_user_in_db(message.from_user.id):
+        bot.send_message(message.from_user.id, 'Сначала вам нужно добавить анкету. Для этого напишите /reg')
+        return
+    user_in_db = get_user_from_db(message.from_user.id)
+
+    if message.from_user.id in users and 'dialog' in users[message.from_user.id]:
+        bot.send_message(message.from_user.id, 'Вы уже в диалоге, оло. Надоело? Напишите /stop_dialog')
+    else:
+        bot.send_message(message.from_user.id, 'Идет поиск собеседника. Это займет максимум 10 секунд')
+    if type_dialog == 'search_interests_dialog':
+        telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_interests_dialog').json()
+    elif type_dialog == 'search_male_dialog':
+        telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_gender_dialog', search_gender='male').json()
+    elif type_dialog == 'search_female_dialog':
+        telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_gender_dialog', search_gender='female').json()
+    print(telegram_id_friend)
+    if 'status' in telegram_id_friend and telegram_id_friend['status'] == 'OK' and (message.from_user.id not in users and 'dialog' not in users[message.from_user.id]):
+        mes = 'Собеседник в абсолютности своей найден. Теперь вы можете общаться. Ах, да, вот его анкета\n\n'
+        users[message.from_user.id] = {}
+        users[message.from_user.id]['dialog'] = telegram_id_friend['telegram_id_suitable_user']
+        users[telegram_id_friend['telegram_id_suitable_user']] = {}
+        users[telegram_id_friend['telegram_id_suitable_user']]['dialog'] = message.from_user.id
+        bot.send_message(int(telegram_id_friend['telegram_id_suitable_user']), mes + render_profile(user_in_db))
+        companion_profile = get_user_from_db(telegram_id_friend['telegram_id_suitable_user'])
+
+        bot.send_message(message.from_user.id, mes + render_profile(companion_profile))
+    # Если пользователь уже в диалоге(такое может быть, и сервер за этим следит), то ничего не делаем.
+    elif telegram_id_friend['status'] == 'user in dialog' or (message.from_user.id in users and 'dialog' in users[message.from_user.id]):
+        # Пользователь получит сообщение о том, что он в диалоге от другого пользователя
+        pass
+    else:
+        bot.send_message(message.from_user.id, error_message)
+    return 'OK'
 
 
 # 4 ПУНКТ ЗАДАНИЯ
@@ -124,35 +167,31 @@ def profile_start(message):
 # Команда поиска собеседника по интересам
 @bot.message_handler(commands=['search_interests'])
 def search_interests(message):
-    if not is_user_in_db(message.from_user.id):
-        bot.send_message(message.from_user.id, 'Сначала вам нужно добавить анкету. Для этого напишите /reg')
-        return
-    user_in_db = get_user_from_db(message.from_user.id)
+    error_message = 'Увы, но почему-то собеседников с подходящими для вас интересами не обнаружилось. Попробуйте поискать позже, ' \
+                    'изменить интересы или выполнить поиск по полу (/search_male /search_female)'
+    search_companion = search_user(message, 'search_interests_dialog', error_message)
+    print(search_companion)
+    print(users)
 
-    if message.from_user.id in users and 'dialog' in users[message.from_user.id]:
-        bot.send_message(message.from_user.id, 'Вы уже в диалоге, оло. Надоело? Напишите /stop_dialog')
-    else:
-        bot.send_message(message.from_user.id, 'Идет поиск собеседника. Это займет максимум 10 секунд')
-    telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_interests_dialog').json()
-    print(telegram_id_friend)
-    if 'status' in telegram_id_friend and telegram_id_friend['status'] == 'OK':
-        mes = 'Собеседник в абсолютности своей найден. Теперь вы можете общаться. Ах, да, вот его анкета\n\n'
-        users[message.from_user.id] = {}
-        users[message.from_user.id]['dialog'] = telegram_id_friend['telegram_id_suitable_user']
-        users[telegram_id_friend['telegram_id_suitable_user']] = {}
-        users[telegram_id_friend['telegram_id_suitable_user']]['dialog'] = message.from_user.id
-        bot.send_message(int(telegram_id_friend['telegram_id_suitable_user']), mes + render_profile(user_in_db))
-        companion_profile = get_user_from_db(telegram_id_friend['telegram_id_suitable_user'])
 
-        bot.send_message(message.from_user.id, mes + render_profile(companion_profile))
-    # Если пользователь уже в диалоге(такое может быть, и сервер за этим следит), то ничего не делаем.
-    elif telegram_id_friend['status'] == 'user in dialog' or (message.from_user.id in users and 'dialog' in users[message.from_user.id]):
-        # Пользователь получит сообщение о том, что он в диалоге от другого пользователя
-        pass
-    else:
-        bot.send_message(message.from_user.id, 'Увы, но почему-то собеседников с подходящими для вас интересами не обнаружилось. '
-                                               'Попробуйте поискать позже, изменить интересы или выполнить поиск по полу (/search_male /search_female)')
-    return
+# Команда поиска собеседника-мужлана
+@bot.message_handler(commands=['search_male'])
+def search_male(message):
+    error_message = 'Увы, но почему-то собеседников с выбранным полом сейчас нет. Попробуйте поискать позже, ' \
+                    'или же можете попробовать поискать собеседника по интересам - /search_interests'
+    search_companion = search_user(message, 'search_male_dialog', error_message)
+    print(search_companion)
+    print(users)
+
+
+# Команда поиска собеседника-женщину
+@bot.message_handler(commands=['search_female'])
+def search_female(message):
+    error_message = 'Увы, но почему-то собеседников с выбранным полом сейчас нет. Попробуйте поискать позже, ' \
+                    'или же можете попробовать поискать собеседника по интересам - /search_interests'
+    search_companion = search_user(message, 'search_female_dialog', error_message)
+    print(search_companion)
+    print(users)
 
 
 # Редактирование профиля
