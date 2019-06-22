@@ -110,7 +110,7 @@ def search_user(message, type_dialog, error_message):
     elif type_dialog == 'search_female_dialog':
         telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_gender_dialog', search_gender='female').json()
     print(telegram_id_friend)
-    if 'status' in telegram_id_friend and telegram_id_friend['status'] == 'OK' and (message.from_user.id not in users and 'dialog' not in users[message.from_user.id]):
+    if 'status' in telegram_id_friend and telegram_id_friend['status'] == 'OK' and message.from_user.id not in users:
         mes = 'Собеседник в абсолютности своей найден. Теперь вы можете общаться. Ах, да, вот его анкета\n\n'
         users[message.from_user.id] = {}
         users[message.from_user.id]['dialog'] = telegram_id_friend['telegram_id_suitable_user']
