@@ -196,9 +196,11 @@ class UserSearch(Resource):  # Для поиска пользователей д
     parser = reqparse.RequestParser()
     # Тип диалога, который ищет пользователь может быть search_interests_dialog, search_gender_dialog и stop_dialog
     # Для stop_dialog нужно также указать telegram_id_companion - телеграм айди собеседника
+    # search_gender - это гендер, который ищет пользователь. Может быть male и female
     parser.add_argument('telegram_id', required=True)
     parser.add_argument('type_dialog', required=True)
     parser.add_argument('telegram_id_companion', required=False)
+    parser.add_argument('search_gender', required=False)
 
     def post(self):
         # Не зная пароль никто не сможет получить пользователя
@@ -243,6 +245,7 @@ class UserSearch(Resource):  # Для поиска пользователей д
                 now_user.status_dialog = 'not_in_dialog'
                 db.session.commit()
             return jsonify({'status': 'not users', 'message': 'The search timed out for 10 seconds. At the moment there are no users with your interests'})
+
         elif args['type_dialog'] == 'stop_dialog':  # Если нужно прекратить диалог между двумя пользователями
             try:
                 telegram_id_companion = int(args['telegram_id_companion'])
@@ -254,6 +257,26 @@ class UserSearch(Resource):  # Для поиска пользователей д
             User.query.filter_by(telegram_id=telegram_id).first().status_dialog = 'not_in_dialog'
             db.session.commit()
             return jsonify({'status': 'OK', 'message': 'User {} and user {} are not in dialog'.format(args['telegram_id_companion'], args['telegram_id'])})
+
+        elif args['type_dialog'] == 'search_gender_dialog':  # Если пользователь ищет собеседника по полу
+            now_user = User.query.filter_by(telegram_id=telegram_id).first()
+            now_user_status_dialog = 'search_' + args['search_gender'] + '_dialog'
+            now_user.status_dialog = now_user_status_dialog
+            db.session.commit()
+            other_user_search_status = 'search_' + now_user.gender + '_dialog'
+            time = time.time()
+            while time.time() - time <= 10:
+                also_search_gender_dialog_users = User.query.filter_by(status_dialog=other_user_search_status, gender='male').all()
+                for user in also_search_gender_dialog_users:
+                    if user.status_dialog == other_user_search_status and now_user.status_dialog == now_user_status_dialog:  # Если пользователь все еще ищет диалог и другой
+                        # пользователь ищет пользователя с таким же гендером, как текущий
+                        user.status_dialog = 'in_dialog'
+                        now_user.status_dialog = 'in_dialog'
+                        db.session.commit()
+                        return jsonify({'status': 'OK', 'telegram_id_suitable_user': str(user.telegram_id)})
+                    elif user.status_dialog == 'in_dialog':
+                        return jsonify({'status': 'OK', 'message': 'User is already in dialog'})
+            return jsonify({'status': 'not users', 'message': 'The search timed out for 10 seconds. At the moment there are no male'})
 
 
 class UserListApi(Resource):

@@ -18,7 +18,8 @@ class User(db.Model):
     # in_dialog - пользователь в диалоге
     # not_in_dialog - пользователь не в диалоге и не ищет диалог
     # search_interests_dialog - пользователь ищет собеседника по интересам,
-    # search_gender_dialog - пользователь ищет собеседника по полу
+    # search_male_dialog - пользователь ищет собеседника мужчину
+    # search_female_dialog - пользователь ищет собеседника женщину
     status_dialog = db.Column(db.String(50), default='not_in_dialog')
     about_you = db.Column(db.String(1000))
 
