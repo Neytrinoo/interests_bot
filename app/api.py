@@ -264,8 +264,8 @@ class UserSearch(Resource):  # Для поиска пользователей д
             now_user.status_dialog = now_user_status_dialog
             db.session.commit()
             other_user_search_status = 'search_' + now_user.gender + '_dialog'
-            time = time.time()
-            while time.time() - time <= 10:
+            start_time = time.time()
+            while time.time() - start_time <= 10:
                 also_search_gender_dialog_users = User.query.filter_by(status_dialog=other_user_search_status, gender='male').all()
                 for user in also_search_gender_dialog_users:
                     if user.status_dialog == other_user_search_status and now_user.status_dialog == now_user_status_dialog:  # Если пользователь все еще ищет диалог и другой
