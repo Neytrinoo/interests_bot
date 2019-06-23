@@ -1,11 +1,11 @@
 import asyncio
 import telebot
-from requests import get, post, put
+from requests import get, post, put, delete
 from telebot import types
 
 token = '797488097:AAFIilpcv61tuQ7kFDtZHZyuPpcE8KuSI88'
 SECRET_PASSWORD = 'yEChQDWrLCXg3zQPvJeEuY25e3EOn0'
-SERVER_API_URL = 'http://127.0.0.1:5000/api/users'
+SERVER_API_URL = ' http://127.0.0.1:5000/api/users'
 SERVER = 'http://127.0.0.1:5000/api'
 bot = telebot.TeleBot(token)
 users = {}
@@ -45,6 +45,7 @@ def render_profile(user):
 
 # Получение одной фотографии пользователя по номеру фотографии
 async def get_user_photo(telegram_id, number_photo):
+    global users
     with get(SERVER + '/user_photos/' + str(telegram_id), headers={'password': SECRET_PASSWORD}, json={'number_photo': str(number_photo)}) as response:
         users[telegram_id]['photos'].append(response.content)
 
@@ -52,13 +53,12 @@ async def get_user_photo(telegram_id, number_photo):
 # Асинхронное получение фотографии пользователя по его телеграм айди. Нужно указать количество фотографий.
 # Чтобы это кол-во получить, нужно получить пользователя из бд и взять из ответа поле count_photos
 # Полученные с сервера фотографии будут храниться в словаре users[telegram_id]['photos'] в массиве
-async def get_user_photos(telegram_id, count_photos):
-    tasks = []
+def get_user_photos(telegram_id, count_photos):
+    global users
     users[telegram_id]['photos'] = []
     for i in range(count_photos):
-        task = asyncio.create_task(get_user_photo(telegram_id, i))
-        tasks.append(task)
-    await asyncio.gather(*tasks)
+        with get(SERVER + '/user_photos/' + str(telegram_id), headers={'password': SECRET_PASSWORD}, json={'number_photo': str(i)}) as response:
+            users[telegram_id]['photos'].append(types.InputMediaPhoto(response.content, str(i)))
 
 
 # Редактирование полей пользовательской анкеты. field_name - название поля, которое надо отредактировать, field_value - значение для изменения поля
@@ -109,16 +109,32 @@ def search_user(message, type_dialog, error_message):
         telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_gender_dialog', search_gender='male').json()
     elif type_dialog == 'search_female_dialog':
         telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_gender_dialog', search_gender='female').json()
-    print(telegram_id_friend)
+    # print(telegram_id_friend)
     if 'status' in telegram_id_friend and telegram_id_friend['status'] == 'OK' and message.from_user.id not in users:
         mes = 'Собеседник в абсолютности своей найден. Теперь вы можете общаться. Ах, да, вот его анкета\n\n'
         users[message.from_user.id] = {}
-        users[message.from_user.id]['dialog'] = int(telegram_id_friend['telegram_id_suitable_user'])
-        users[int(telegram_id_friend['telegram_id_suitable_user'])] = {}
-        users[int(telegram_id_friend['telegram_id_suitable_user'])]['dialog'] = message.from_user.id
+        users[message.from_user.id]['dialog'] = telegram_id_friend['telegram_id_suitable_user']
+        users[telegram_id_friend['telegram_id_suitable_user']] = {}
+        users[telegram_id_friend['telegram_id_suitable_user']]['dialog'] = message.from_user.id
+        # Отправляем фотки текущего пользователя и его анкету его собеседнику
+        user_count = get_user_from_db(message.from_user.id)['count_photos']
+        get_user_photos(message.from_user.id, int(user_count))
+        if len(users[message.from_user.id]['photos']) >= 2:  # Если фоток больше двух - то отправляем альбомом
+            bot.send_media_group(int(telegram_id_friend['telegram_id_suitable_user']), users[message.from_user.id]['photos'])
+        elif len(users[message.from_user.id]['photos']) == 1:
+            bot.send_photo(int(telegram_id_friend['telegram_id_suitable_user']), users[message.from_user.id]['photos'][0])  # Если фотка одна - то просто отправкой фотки
+        del users[message.from_user.id]['photos']
         bot.send_message(int(telegram_id_friend['telegram_id_suitable_user']), mes + render_profile(user_in_db))
-        companion_profile = get_user_from_db(telegram_id_friend['telegram_id_suitable_user'])
 
+        # Отправляем фотки собеседника и его анкету текущему пользователю
+        companion_profile = get_user_from_db(telegram_id_friend['telegram_id_suitable_user'])
+        user_count = get_user_from_db(telegram_id_friend['telegram_id_suitable_user'])['count_photos']
+        get_user_photos(int(telegram_id_friend['telegram_id_suitable_user']), int(user_count))
+        if len(users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos']) >= 2:  # Если фоток больше двух - то отправляем альбомом
+            bot.send_media_group(message.from_user.id, users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos'])
+        elif len(users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos']) == 1:  # Если фотка одна - то просто отправкой фотки
+            bot.send_photo(message.from_user.id, users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos'][0])
+        del users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos']
         bot.send_message(message.from_user.id, mes + render_profile(companion_profile))
     # Если пользователь уже в диалоге(такое может быть, и сервер за этим следит), то ничего не делаем.
     elif telegram_id_friend['status'] == 'user in dialog' or (message.from_user.id in users and 'dialog' in users[message.from_user.id]):
@@ -133,7 +149,15 @@ def search_user(message, type_dialog, error_message):
 @bot.message_handler(commands=['show_profile'])
 def show_profile(message):
     if is_user_in_db(message.from_user.id):
-        user_in_db = get_user_from_db(message.from_user.id)  # Зачем ты каждый раз преобразовывал к джейсону, если можно сделать это сразу, оло
+        user_in_db = get_user_from_db(message.from_user.id)
+        user_count = get_user_from_db(message.from_user.id)['count_photos']
+        users[message.from_user.id] = {}
+        get_user_photos(message.from_user.id, int(user_count))
+        if len(users[message.from_user.id]['photos']) >= 2:
+            bot.send_media_group(message.from_user.id, users[message.from_user.id]['photos'])
+        elif len(users[message.from_user.id]['photos']) == 1:
+            bot.send_photo(message.from_user.id, users[message.from_user.id]['photos'][0])
+        del users[message.from_user.id]['photos']
         print(user_in_db)
         profile = 'Имя: ' + user_in_db['name'] + '\nПол: ' \
                   + user_in_db['gender'] + '\nКоличество прожитых годикофф: ' + user_in_db['age'] \
@@ -171,7 +195,6 @@ def search_interests(message):
                     'изменить интересы или выполнить поиск по полу (/search_male /search_female)'
     search_companion = search_user(message, 'search_interests_dialog', error_message)
     print(search_companion)
-    print(users)
 
 
 # Команда поиска собеседника-мужлана
@@ -441,6 +464,7 @@ def profile_get_photos(message):
             bot.send_message(message.from_user.id, 'Фото номер ' + str(len(users[message.from_user.id]['photos'])) + ' добавлено')
         else:
             bot.send_message(message.from_user.id, '4 первые фотографии были добавлены, но больше вы добавить не можете.')
+        bot.register_next_step_handler(message, profile_get_photos)
         print(len(users[message.from_user.id]['photos']))
 
     except Exception as e:
@@ -514,7 +538,7 @@ def check_answer(message):
     return
 
 
-@bot.message_handler(func=lambda message: True, content_types=['text', 'photo'])
+@bot.message_handler(func=lambda message: True, content_types=['photo'])
 def check_answer_photo(message):
     try:
         keyboard_hider = types.ReplyKeyboardRemove()
@@ -525,27 +549,32 @@ def check_answer_photo(message):
             if len(users[message.from_user.id]['photos']) > 3:
                 bot.send_message(message.from_user.id, 'Вы успешно добавили 4 фотографии. Фотографии успешно отредактированы!', reply_markup=EDIT_PROFILE_KEYBOARD)
                 register_user(users[message.from_user.id])
+                bot.register_next_step_handler(message, check_answer)
                 return
             bot.send_message(message.from_user.id, 'Фото номер ' + str(len(users[message.from_user.id]['photos'])) + ' добавлено')
         else:
             bot.send_message(message.from_user.id, '4 первые фотографии были добавлены, но больше вы добавить не можете.')
+        bot.register_next_step_handler(message, check_answer_photo)
         print(len(users[message.from_user.id]['photos']))
     except Exception as e:
         command = message.text.lower().rstrip().lstrip()
         if command == 'да':
             keyboard = types.ReplyKeyboardMarkup(row_width=2)
             keyboard.add(types.KeyboardButton('/skip_photos'), types.KeyboardButton('/stop_photos'))
-            users[message.from_user.id] = {}
+            users[message.from_user.id] = {'telegram_id': str(message.from_user.id)}
             users[message.from_user.id]['photos'] = []
             # <Тут должна быть строчка с удалением фотографий на сервере. Пока в апи нет такой возможности, но вскоре она будет>
+            print(delete(SERVER_API_URL + '/' + str(message.from_user.id), headers={'password': SECRET_PASSWORD}))
             bot.send_message(message.from_user.id, 'Начинайте добавлять фотографии (предыдущие удалены). Если вы не хотите добавлять фотографии, напишите /skip_photos \n '
                                                    'Если вы добавили нужные вам фотографии, напишите /stop_photos', reply_markup=keyboard)
+            bot.register_next_step_handler(message, check_answer_photo)
         elif command == 'нет':
             bot.send_message(message.from_user.id, 'Ну не хотите, как хотите', reply_markup=EDIT_PROFILE_KEYBOARD)
             bot.register_next_step_handler(message, check_answer)
         elif command == '/skip_photos':
             bot.send_message(message.from_user.id, 'Вы ещё можете добавить фотографии в любой момент',
                              reply_markup=EDIT_PROFILE_KEYBOARD)
+            users[message.from_user.id]['photos'] = []
             bot.register_next_step_handler(message, check_answer)
         elif command == '/stop_photos':
             if len(users[message.from_user.id]['photos']) >= 1:
