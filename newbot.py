@@ -109,7 +109,7 @@ def search_user(message, type_dialog, error_message):
         telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_gender_dialog', search_gender='male').json()
     elif type_dialog == 'search_female_dialog':
         telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_gender_dialog', search_gender='female').json()
-    print(telegram_id_friend)
+    # print(telegram_id_friend)
     if 'status' in telegram_id_friend and telegram_id_friend['status'] == 'OK' and message.from_user.id not in users:
         mes = 'Собеседник в абсолютности своей найден. Теперь вы можете общаться. Ах, да, вот его анкета\n\n'
         users[message.from_user.id] = {}
@@ -119,7 +119,9 @@ def search_user(message, type_dialog, error_message):
         bot.send_message(int(telegram_id_friend['telegram_id_suitable_user']), mes + render_profile(user_in_db))
         companion_profile = get_user_from_db(telegram_id_friend['telegram_id_suitable_user'])
 
-        bot.send_message(message.from_user.id, mes + render_profile(companion_profile))
+        user_count = get_user_from_db(users[message.from_user.id]['dialog'])['count_photos']
+        end_photos = get_user_photos(users[message.from_user.id]['dialog'], user_count)
+        bot.send_message(message.from_user.id, mes + render_profile(companion_profile) + bot.send_media_group(users[message.from_user.id]['dialog'], end_photos))
     # Если пользователь уже в диалоге(такое может быть, и сервер за этим следит), то ничего не делаем.
     elif telegram_id_friend['status'] == 'user in dialog' or (message.from_user.id in users and 'dialog' in users[message.from_user.id]):
         # Пользователь получит сообщение о том, что он в диалоге от другого пользователя
