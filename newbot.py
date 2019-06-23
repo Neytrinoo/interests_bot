@@ -5,7 +5,7 @@ from telebot import types
 
 token = '797488097:AAFIilpcv61tuQ7kFDtZHZyuPpcE8KuSI88'
 SECRET_PASSWORD = 'yEChQDWrLCXg3zQPvJeEuY25e3EOn0'
-SERVER_API_URL = ' http://127.0.0.1:5000/api/users'
+SERVER_API_URL = 'http://127.0.0.1:5000/api/users'
 SERVER = 'http://127.0.0.1:5000/api'
 bot = telebot.TeleBot(token)
 users = {}
@@ -124,6 +124,7 @@ def search_user(message, type_dialog, error_message):
         elif len(users[message.from_user.id]['photos']) == 1:
             bot.send_photo(int(telegram_id_friend['telegram_id_suitable_user']), users[message.from_user.id]['photos'][0])  # Если фотка одна - то просто отправкой фотки
         del users[message.from_user.id]['photos']
+
         bot.send_message(int(telegram_id_friend['telegram_id_suitable_user']), mes + render_profile(user_in_db))
 
         # Отправляем фотки собеседника и его анкету текущему пользователю
@@ -131,9 +132,9 @@ def search_user(message, type_dialog, error_message):
         user_count = get_user_from_db(telegram_id_friend['telegram_id_suitable_user'])['count_photos']
         get_user_photos(int(telegram_id_friend['telegram_id_suitable_user']), int(user_count))
         if len(users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos']) >= 2:  # Если фоток больше двух - то отправляем альбомом
-            bot.send_media_group(message.from_user.id, users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos'])
+            bot.send_media_group(message.from_user.id, users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos'], mes + render_profile(companion_profile))
         elif len(users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos']) == 1:  # Если фотка одна - то просто отправкой фотки
-            bot.send_photo(message.from_user.id, users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos'][0])
+            bot.send_photo(message.from_user.id, users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos'][0], mes + render_profile(companion_profile))
         del users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos']
         bot.send_message(message.from_user.id, mes + render_profile(companion_profile))
     # Если пользователь уже в диалоге(такое может быть, и сервер за этим следит), то ничего не делаем.
@@ -323,7 +324,7 @@ def profile_stop_photos(message):
     bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, ура!', reply_markup=keyboard_hider)
 
 
-@bot.message_handler(content_types=["text", "sticker", "pinned_message", "photo", "audio", "voice"])
+@bot.message_handler(content_types=["text", "sticker", "pinned_message", "photo", "audio", "voice", 'video', 'video_note'])
 # 1 ПУНКТ ЗАДАНИЯ
 def profile_pre_start(message):
     if is_user_in_db(message.from_user.id) is True:
@@ -341,6 +342,13 @@ def profile_pre_start(message):
             elif message.content_type == 'voice':
                 print(message.voice)
                 bot.send_voice(id_friend, message.voice.file_id)
+            elif message.content_type == 'video':
+                print(message.video)
+                bot.send_video(id_friend, message.video.file_id)
+            elif message.content_type == 'video_note':
+                print(message.video)
+                bot.send_video_note(id_friend, message.video_note.file_id)
+            print(message.content_type)
         else:
             bot.send_message(message.from_user.id, 'Вам нужно написать /search_interests чтобы найти собеседника со схожими с вашими интересами')
     else:
