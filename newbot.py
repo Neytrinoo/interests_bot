@@ -5,8 +5,8 @@ from telebot import types
 
 token = '797488097:AAFIilpcv61tuQ7kFDtZHZyuPpcE8KuSI88'
 SECRET_PASSWORD = 'yEChQDWrLCXg3zQPvJeEuY25e3EOn0'
-SERVER_API_URL = 'http://127.0.0.1:5000/api/users'
-SERVER = 'http://127.0.0.1:5000/api'
+SERVER_API_URL = 'http://puparass.pythonanywhere.com/api/users'
+SERVER = 'http://puparass.pythonanywhere.com/api'
 bot = telebot.TeleBot(token)
 users = {}
 
@@ -125,6 +125,7 @@ def search_user(message, type_dialog, error_message):
             bot.send_photo(int(telegram_id_friend['telegram_id_suitable_user']), users[message.from_user.id]['photos'][0])  # Если фотка одна - то просто отправкой фотки
         del users[message.from_user.id]['photos']
 
+        bot.send_audio(int(telegram_id_friend['telegram_id_suitable_user']), message.audio.file_id)
         bot.send_message(int(telegram_id_friend['telegram_id_suitable_user']), mes + render_profile(user_in_db))
 
         # Отправляем фотки собеседника и его анкету текущему пользователю
@@ -324,7 +325,7 @@ def profile_stop_photos(message):
     bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, ура!', reply_markup=keyboard_hider)
 
 
-@bot.message_handler(content_types=["text", "sticker", "pinned_message", "photo", "audio", "voice", 'video', 'video_note'])
+@bot.message_handler(content_types=["text", "sticker", "pinned_message", "photo", "audio", "voice", 'video'])
 # 1 ПУНКТ ЗАДАНИЯ
 def profile_pre_start(message):
     if is_user_in_db(message.from_user.id) is True:
@@ -344,11 +345,7 @@ def profile_pre_start(message):
                 bot.send_voice(id_friend, message.voice.file_id)
             elif message.content_type == 'video':
                 print(message.video)
-                bot.send_video(id_friend, message.video.file_id)
-            elif message.content_type == 'video_note':
-                print(message.video)
-                bot.send_video_note(id_friend, message.video_note.file_id)
-            print(message.content_type)
+                bot.send_video(id_friend, message.video[-1].file_id)
         else:
             bot.send_message(message.from_user.id, 'Вам нужно написать /search_interests чтобы найти собеседника со схожими с вашими интересами')
     else:
