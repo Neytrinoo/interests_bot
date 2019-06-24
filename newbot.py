@@ -35,10 +35,10 @@ def is_user_in_db(telegram_id):
 
 
 def render_profile(user):
-    profile = 'Никнейм товарища: ' + user['name'] + '\nГендер нашего партийного друга: ' \
-              + user['gender'] + '\nКоличество лет, проведенных на заводе: ' + user['age'] \
-              + '\nДолжность на заводе: ' + user['about_me'] + '\nЧто этот хрен хочет от тебя: ' \
-              + user['about_you'] + '\nЧто в голове у этого буржуя, кроме завода: ' \
+    profile = 'Никнейм: ' + user['name'] + '\nПол: ' \
+              + user['gender'] + '\nВозраст: ' + user['age'] \
+              + '\nО пользователе: ' + user['about_me'] + '\nО желаемом собеседнике: ' \
+              + user['about_you'] + '\nИнтересы: ' \
               + user['interests']
     return profile
 
@@ -100,7 +100,7 @@ def search_user(message, type_dialog, error_message):
     user_in_db = get_user_from_db(message.from_user.id)
 
     if message.from_user.id in users and 'dialog' in users[message.from_user.id]:
-        bot.send_message(message.from_user.id, 'Вы уже в диалоге, оло. Надоело? Напишите /stop_dialog')
+        bot.send_message(message.from_user.id, 'Вы уже находитесь в диалоге. Надоело? Напишите /stop_dialog')
     else:
         bot.send_message(message.from_user.id, 'Идет поиск собеседника. Это займет максимум 10 секунд')
     if type_dialog == 'search_interests_dialog':
@@ -111,7 +111,7 @@ def search_user(message, type_dialog, error_message):
         telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_gender_dialog', search_gender='female').json()
     # print(telegram_id_friend)
     if 'status' in telegram_id_friend and telegram_id_friend['status'] == 'OK' and message.from_user.id not in users:
-        mes = 'Собеседник в абсолютности своей найден. Теперь вы можете общаться. Ах, да, вот его анкета\n\n'
+        mes = 'Собеседник найден. Теперь вы можете начать общаться. Ах, да, вот его анкета:\n\n'
         users[message.from_user.id] = {}
         users[message.from_user.id]['dialog'] = telegram_id_friend['telegram_id_suitable_user']
         users[telegram_id_friend['telegram_id_suitable_user']] = {}
@@ -161,10 +161,10 @@ def show_profile(message):
             bot.send_photo(message.from_user.id, users[message.from_user.id]['photos'][0])
         del users[message.from_user.id]['photos']
         print(user_in_db)
-        profile = 'Имя: ' + user_in_db['name'] + '\nПол: ' \
-                  + user_in_db['gender'] + '\nКоличество прожитых годикофф: ' + user_in_db['age'] \
+        profile = 'Никнейм: ' + user_in_db['name'] + '\nПол: ' \
+                  + user_in_db['gender'] + '\nВозраст: ' + user_in_db['age'] \
                   + '\nО вас: ' + user_in_db['about_me'] + '\nО желаемом собеседнике: ' \
-                  + user_in_db['about_you'] + '\nВаши интересы: ' \
+                  + user_in_db['about_you'] + '\nИнтересы: ' \
                   + user_in_db['interests']
         bot.send_message(message.from_user.id, profile)
     else:
@@ -183,7 +183,7 @@ def profile_start(message):
         bot.send_message(message.from_user.id, 'Вам недоступна эта команда')
         return
     if is_user_in_db(message.from_user.id):
-        bot.send_message(message.from_user.id, 'Ваша анкета была добавлена ранее. Вы можете отредактировать ее')
+        bot.send_message(message.from_user.id, 'Ваша анкета была добавлена ранее. Вы можете отредактировать ее - /edit_profile')
         return
     keyboard_hider = types.ReplyKeyboardRemove()
     bot.send_message(message.from_user.id, "Как вас зовут?", reply_markup=keyboard_hider)
@@ -193,8 +193,8 @@ def profile_start(message):
 # Команда поиска собеседника по интересам
 @bot.message_handler(commands=['search_interests'])
 def search_interests(message):
-    error_message = 'Увы, но почему-то собеседников с подходящими для вас интересами не обнаружилось. Попробуйте поискать позже, ' \
-                    'изменить интересы или выполнить поиск по полу (/search_male /search_female)'
+    error_message = 'Увы, но на данный момент собеседников с подходящими для вас интересами не обнаружилось. Попробуйте поискать позже, ' \
+                    'изменить интересы или выполнить поиск по полу - (/search_male или /search_female)'
     search_companion = search_user(message, 'search_interests_dialog', error_message)
     print(search_companion)
 
@@ -202,8 +202,8 @@ def search_interests(message):
 # Команда поиска собеседника-мужлана
 @bot.message_handler(commands=['search_male'])
 def search_male(message):
-    error_message = 'Увы, но почему-то собеседников с выбранным полом сейчас нет. Попробуйте поискать позже, ' \
-                    'или же можете попробовать поискать собеседника по интересам - /search_interests'
+    error_message = 'Увы, но на данный момент собеседников с выбранным полом нет. Попробуйте поискать позже, ' \
+                    'или же можете попробовать поискать собеседника по интересам или по другому полу - (/search_interests или /search_female)'
     search_companion = search_user(message, 'search_male_dialog', error_message)
     print(search_companion)
     print(users)
@@ -212,8 +212,8 @@ def search_male(message):
 # Команда поиска собеседника-женщину
 @bot.message_handler(commands=['search_female'])
 def search_female(message):
-    error_message = 'Увы, но почему-то собеседников с выбранным полом сейчас нет. Попробуйте поискать позже, ' \
-                    'или же можете попробовать поискать собеседника по интересам - /search_interests'
+    error_message = 'Увы, но на данный момент собеседников с выбранным полом нет. Попробуйте поискать позже, ' \
+                    'или же можете попробовать поискать собеседника по интересам или по другому полу - (/search_interests или /search_male)'
     search_companion = search_user(message, 'search_female_dialog', error_message)
     print(search_companion)
     print(users)
@@ -223,7 +223,7 @@ def search_female(message):
 @bot.message_handler(commands=['edit_profile'])
 def edit_prof(message):
     if message.from_user.id in users and 'dialog' in users[message.from_user.id]:
-        bot.send_message(message.from_user.id, "БИСТРА ВИШЕЛ С ДИЛОГА!")
+        bot.send_message(message.from_user.id, "Вы не может отредактировать профиль во время диалога. Что бы выйти из него - /stop_dialog!")
     if is_user_in_db(message.from_user.id):
         bot.send_message(message.from_user.id, "Что вы хотите изменить:", reply_markup=EDIT_PROFILE_KEYBOARD)
         bot.register_next_step_handler(message, check_answer)
@@ -281,13 +281,15 @@ def edit_prof(message):
 def stop_dial(message):
     if message.from_user.id in users and 'dialog' in users[message.from_user.id]:
         stop_dialog(message.from_user.id, users[message.from_user.id]['dialog'])
-        bot.send_message(message.from_user.id, 'Диалог остановлен. Чтобы начать поиск заново, напишите /search_interests')
-        bot.send_message(users[message.from_user.id]['dialog'], 'Диалог остановлен. Чтобы начать поиск заново, напишите /search_interests')
+        bot.send_message(message.from_user.id, 'Диалог остановлен. Чтобы начать поиск по интересам заново, напишите - /search_interests.'
+                                               ' Или можете найти собеседника по полу - (/search_male или /search_female)')
+        bot.send_message(users[message.from_user.id]['dialog'], 'Диалог остановлен. Чтобы начать поиск по интересам заново, напишите - /search_interests.'
+                                                                ' Или можете найти собеседника по полу - (/search_male или /search_female)')
         del users[users[message.from_user.id]['dialog']]
         del users[message.from_user.id]
         print(users)
     else:
-        bot.send_message(message.from_user.id, "Доцл, что бы остановить диалог нужно быть в нём!")
+        bot.send_message(message.from_user.id, "Чтобы остановить диалог - нужно быть в нём!")
         return
     return
 
@@ -304,7 +306,7 @@ def profile_skip_photos(message):
     users[message.from_user.id]['photos'] = []
     register_user(users[message.from_user.id])
     keyboard_hider = types.ReplyKeyboardRemove()
-    bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, уря!', reply_markup=keyboard_hider)
+    bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена!', reply_markup=keyboard_hider)
     print(users)
 
 
@@ -350,7 +352,8 @@ def profile_pre_start(message):
                 print(message.video_note)
                 bot.send_video_note(id_friend, message.video_note.file_id)
         else:
-            bot.send_message(message.from_user.id, 'Вам нужно написать /search_interests чтобы найти собеседника со схожими с вашими интересами')
+            bot.send_message(message.from_user.id, 'Для начала вам нужно написать /search_interests, чтобы найти собеседника со схожими с вашими интересами. '
+                                                   'Или же можете найти собеседника по полу - (/search_male или /search_female)')
     else:
         bot.send_message(message.from_user.id, 'Сначала нужно зарегистрировать анкету (/reg - для регистрации)')
 
@@ -358,7 +361,7 @@ def profile_pre_start(message):
 @bot.message_handler(content_types=['text'])
 def profile_get_name(message):
     if len(message.text) >= 50:
-        bot.send_message(message.from_user.id, 'Введите ваше настоящее имя')
+        bot.send_message(message.from_user.id, 'Никнейм не может превышать 50 символов')
         bot.register_next_step_handler(message, profile_get_name)
         return
     users[message.from_user.id] = {}
@@ -420,31 +423,31 @@ def profile_get_interests(message):
     for i in range(len(p_interests)):
         p_interests[i] = p_interests[i].lower().lstrip().rstrip()
         if len(p_interests[i]) >= 256:
-            bot.send_message(message.from_user.id, 'Длина одного из интересов не может превышать 256 символов')
+            bot.send_message(message.from_user.id, 'Длина одного из интересов не может превышать 256 символов!')
             bot.register_next_step_handler(message, profile_get_interests)
             return profile_get_interests
     users[message.from_user.id]['interests'] = message.text
     print(users)
-    bot.send_message(message.from_user.id, 'Ваша биография?')
+    bot.send_message(message.from_user.id, 'Расскажите о себе?')
     bot.register_next_step_handler(message, profile_get_biography)
 
 
 @bot.message_handler(content_types=['text'])
 def profile_get_biography(message):
     if len(message.text) >= 1000:
-        bot.send_message(message.from_user.id, 'Длина биографии не может превышать 1000 символов')
+        bot.send_message(message.from_user.id, 'Длина текста не может превышать 1000 символов')
         bot.register_next_step_handler(message, profile_get_biography)
         return profile_get_biography
     users[message.from_user.id]['about_me'] = message.text
     print(users)
-    bot.send_message(message.from_user.id, 'Расскажите о желаемом партнёре?')
+    bot.send_message(message.from_user.id, 'Расскажите о желаемом собеседнике?')
     bot.register_next_step_handler(message, profile_get_about_partner)
 
 
 @bot.message_handler(content_types=['text'])
 def profile_get_about_partner(message):
     if len(message.text) >= 1000:
-        bot.send_message(message.from_user.id, 'Длина биографии не может превышать 1000 символов')
+        bot.send_message(message.from_user.id, 'Длина текста не может превышать 1000 символов')
         bot.register_next_step_handler(message, profile_get_about_partner)
         return profile_get_about_partner
     users[message.from_user.id]['about_you'] = message.text
@@ -466,12 +469,12 @@ def profile_get_photos(message):
         if len(users[message.from_user.id]['photos']) <= 3:
             users[message.from_user.id]['photos'].append(downloaded_file)
             if len(users[message.from_user.id]['photos']) > 3:
-                bot.send_message(message.from_user.id, 'Вы успешно добавили 4 фотографии. Ваша анкета зарегистрирована, ура!', reply_markup=keyboard_hider)
+                bot.send_message(message.from_user.id, 'Вы успешно добавили 4 фотографии. Ваша анкета зарегистрирована!', reply_markup=keyboard_hider)
                 register_user(users[message.from_user.id])
                 return
             bot.send_message(message.from_user.id, 'Фото номер ' + str(len(users[message.from_user.id]['photos'])) + ' добавлено')
         else:
-            bot.send_message(message.from_user.id, '4 первые фотографии были добавлены, но больше вы добавить не можете.')
+            bot.send_message(message.from_user.id, '4 первые фотографии были добавлены, но больше вы уже добавить не можете!')
         bot.register_next_step_handler(message, profile_get_photos)
         print(len(users[message.from_user.id]['photos']))
 
@@ -479,26 +482,26 @@ def profile_get_photos(message):
         btn_photo = message.text.lower().lstrip().rstrip()
         print(btn_photo)
         if btn_photo == '/skip_photos':
-            bot.send_message(message.from_user.id, 'Вы ещё можете добавить фотографии в любой момент',
+            bot.send_message(message.from_user.id, 'Вы ещё можете добавить фотографии в любой момент, используя команду /edit_profile',
                              reply_markup=keyboard_hider)
             register_user(users[message.from_user.id])
             return
             # bot.register_next_step_handler(message, следующая функция)
         elif btn_photo == '/stop_photos':
             if len(users[message.from_user.id]['photos']) >= 1:
-                bot.send_message(message.from_user.id, 'Вы ещё можете пополнить фотографии вашего профиля в любой момент',
+                bot.send_message(message.from_user.id, 'Вы ещё можете пополнить фотографии вашего профиля в любой момент, используя команду /edit_profile',
                                  reply_markup=keyboard_hider)
                 register_user(users[message.from_user.id])
                 return
                 # bot.register_next_step_handler(message, следующая функция)
             else:
                 bot.send_message(message.from_user.id,
-                                 'Для остановки подачи фотографий вам нужно иметь хотя бы больше одной фотографии')
+                                 'Для остановки подачи фотографий, вам нужно иметь хотя бы одну фотографию')
                 bot.register_next_step_handler(message, profile_get_photos)
                 return profile_get_photos
         else:
             print(e)
-            bot.send_message(message.from_user.id, 'Пожалуйста отправьте фото нужного формата')
+            bot.send_message(message.from_user.id, 'Отправьте фото нужного формата')
             bot.register_next_step_handler(message, profile_get_photos)
             return profile_get_photos
 
@@ -508,22 +511,22 @@ def check_answer(message):
     keyboard_hider = types.ReplyKeyboardRemove()
     command = message.text.lower().rstrip().lstrip()
     if command == 'никнейм':
-        bot.send_message(message.from_user.id, "Новый желаемый никнейм:", reply_markup=keyboard_hider)
+        bot.send_message(message.from_user.id, "Смена никнейма:", reply_markup=keyboard_hider)
         bot.register_next_step_handler(message, check_answer_name)
     elif command == 'пол':
         keyboard = types.ReplyKeyboardMarkup(row_width=2)
         keyboard.add(types.KeyboardButton('Мужской'), types.KeyboardButton('Женский'))
-        bot.send_message(message.from_user.id, "Какой у вас пол?", reply_markup=keyboard)
+        bot.send_message(message.from_user.id, "Смена пола:", reply_markup=keyboard)
         types.ReplyKeyboardRemove(selective=False)
         bot.register_next_step_handler(message, check_answer_gender)
     elif command == 'возраст':
-        bot.send_message(message.from_user.id, "Новый желаемый возраст:", reply_markup=keyboard_hider)
+        bot.send_message(message.from_user.id, "Смена возраста:", reply_markup=keyboard_hider)
         bot.register_next_step_handler(message, check_answer_age)
     elif command == 'о вас':
-        bot.send_message(message.from_user.id, "Изменение биографии:", reply_markup=keyboard_hider)
+        bot.send_message(message.from_user.id, "Изменение пункта \"о вас\":", reply_markup=keyboard_hider)
         bot.register_next_step_handler(message, check_answer_about_me)
     elif command == 'о собеседнике':
-        bot.send_message(message.from_user.id, "Изменение желаний о собеседнике:", reply_markup=keyboard_hider)
+        bot.send_message(message.from_user.id, "Изменение пункта \"о собеседнике\":", reply_markup=keyboard_hider)
         bot.register_next_step_handler(message, check_answer_about_you)
     elif command == 'интересы':
         bot.send_message(message.from_user.id, "Новые интересы (предыдущие будут удалены):", reply_markup=keyboard_hider)
@@ -537,11 +540,12 @@ def check_answer(message):
                          'Новые фотографии (Максимум 4). Предыдущие будут удалены. Начать добавление фотографий?', reply_markup=keyboard)
         bot.register_next_step_handler(message, check_answer_photo)
     elif command == 'прекратить редактировние':
-        bot.send_message(message.from_user.id, "Oh shit here we go again", reply_markup=keyboard_hider)
+        bot.send_message(message.from_user.id, "Прекращение редактировния", reply_markup=keyboard_hider)
         # HELP: Куда эта запупа должна вести?
         # bot.register_next_step_handler(message, XZ_link(Главная менюшка))
+        # Саси, так и надо оставить, пусть просто убирает клаву, этого достаточно. (Всё равно ты это не прочтешь, а если и зачитаешь, то (1 слово))
     else:
-        bot.send_message(message.from_user.id, 'Так дело не пойдет')
+        bot.send_message(message.from_user.id, 'Введите одну из доступных команд!')
         return
     return
 
@@ -574,25 +578,25 @@ def check_answer_photo(message):
             # <Тут должна быть строчка с удалением фотографий на сервере. Пока в апи нет такой возможности, но вскоре она будет>
             print(delete(SERVER_API_URL + '/' + str(message.from_user.id), headers={'password': SECRET_PASSWORD}))
             bot.send_message(message.from_user.id, 'Начинайте добавлять фотографии (предыдущие удалены). Если вы не хотите добавлять фотографии, напишите /skip_photos \n '
-                                                   'Если вы добавили нужные вам фотографии, напишите /stop_photos', reply_markup=keyboard)
+                                                   'Если вы уже добавили нужные вам фотографии, напишите /stop_photos', reply_markup=keyboard)
             bot.register_next_step_handler(message, check_answer_photo)
         elif command == 'нет':
-            bot.send_message(message.from_user.id, 'Ну не хотите, как хотите', reply_markup=EDIT_PROFILE_KEYBOARD)
+            bot.send_message(message.from_user.id, 'Нет так нет', reply_markup=EDIT_PROFILE_KEYBOARD)
             bot.register_next_step_handler(message, check_answer)
         elif command == '/skip_photos':
-            bot.send_message(message.from_user.id, 'Вы ещё можете добавить фотографии в любой момент',
+            bot.send_message(message.from_user.id, 'Вы ещё можете добавить фотографии в любой момент, используя команду /edit_profile',
                              reply_markup=EDIT_PROFILE_KEYBOARD)
             users[message.from_user.id]['photos'] = []
             bot.register_next_step_handler(message, check_answer)
         elif command == '/stop_photos':
             if len(users[message.from_user.id]['photos']) >= 1:
-                bot.send_message(message.from_user.id, 'Вы ещё можете пополнить фотографии вашего профиля в любой момент',
+                bot.send_message(message.from_user.id, 'Вы ещё можете добавить фотографии в любой момент, используя команду /edit_profile',
                                  reply_markup=EDIT_PROFILE_KEYBOARD)
                 register_user(users[message.from_user.id])
                 bot.register_next_step_handler(message, check_answer)
             else:
                 bot.send_message(message.from_user.id,
-                                 'Для остановки подачи фотографий вам нужно иметь хотя бы больше одной фотографии')
+                                 'Для остановки подачи фотографий, вам нужно иметь хотя бы одну фотографию')
                 bot.register_next_step_handler(message, check_answer_photo)
         else:
             bot.send_message(message.from_user.id, 'Да или нет?')
@@ -602,11 +606,11 @@ def check_answer_photo(message):
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def check_answer_name(message):
     if len(message.text) >= 50:
-        bot.send_message(message.from_user.id, 'Введите ваше настоящее имя')
+        bot.send_message(message.from_user.id, 'Никнейм не может превышать 50 символов')
         bot.register_next_step_handler(message, check_answer_name)
         return
     edit_profile(message.from_user.id, 'name', message.text)
-    bot.send_message(message.from_user.id, 'Имя успешно изменено', reply_markup=EDIT_PROFILE_KEYBOARD)
+    bot.send_message(message.from_user.id, 'Никнейм успешно изменено', reply_markup=EDIT_PROFILE_KEYBOARD)
     bot.register_next_step_handler(message, check_answer)
 
 
@@ -655,21 +659,21 @@ def check_answer_age(message):
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def check_answer_about_me(message):
     if len(message.text) >= 1000:
-        bot.send_message(message.from_user.id, 'Длина биографии не может превышать 1000 символов')
+        bot.send_message(message.from_user.id, 'Длина текста не может превышать 1000 символов')
         bot.register_next_step_handler(message, check_answer_about_me)
     edit_profile(message.from_user.id, 'about_me', message.text)
-    bot.send_message(message.from_user.id, 'Ваша биография успешно изменена', reply_markup=EDIT_PROFILE_KEYBOARD)
+    bot.send_message(message.from_user.id, 'Пункт "о себе" успешно изменен', reply_markup=EDIT_PROFILE_KEYBOARD)
     bot.register_next_step_handler(message, check_answer)
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def check_answer_about_you(message):
     if len(message.text) >= 1000:
-        bot.send_message(message.from_user.id, 'Длина инфы о собеседнике не может превышать 1000 символов')
+        bot.send_message(message.from_user.id, 'Длина текста не может превышать 1000 символов')
         bot.register_next_step_handler(message, check_answer_about_you)
         return check_answer_about_you
     edit_profile(message.from_user.id, 'about_you', message.text)
-    bot.send_message(message.from_user.id, 'Инфа о желаемом собеседнике успешно изменена', reply_markup=EDIT_PROFILE_KEYBOARD)
+    bot.send_message(message.from_user.id, 'Пункт "о желаемом собеседнике" успешно изменен', reply_markup=EDIT_PROFILE_KEYBOARD)
     bot.register_next_step_handler(message, check_answer)
 
 
