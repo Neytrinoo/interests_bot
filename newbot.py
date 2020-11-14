@@ -46,7 +46,8 @@ def render_profile(user):
 # Получение одной фотографии пользователя по номеру фотографии
 async def get_user_photo(telegram_id, number_photo):
     global users
-    with get(SERVER + '/user_photos/' + str(telegram_id), headers={'password': SECRET_PASSWORD}, json={'number_photo': str(number_photo)}) as response:
+    with get(SERVER + '/user_photos/' + str(telegram_id), headers={'password': SECRET_PASSWORD},
+             json={'number_photo': str(number_photo)}) as response:
         users[telegram_id]['photos'].append(response.content)
 
 
@@ -57,13 +58,16 @@ def get_user_photos(telegram_id, count_photos):
     global users
     users[telegram_id]['photos'] = []
     for i in range(count_photos):
-        with get(SERVER + '/user_photos/' + str(telegram_id), headers={'password': SECRET_PASSWORD}, json={'number_photo': str(i)}) as response:
+        with get(SERVER + '/user_photos/' + str(telegram_id), headers={'password': SECRET_PASSWORD},
+                 json={'number_photo': str(i)}) as response:
             users[telegram_id]['photos'].append(types.InputMediaPhoto(response.content, str(i)))
 
 
-# Редактирование полей пользовательской анкеты. field_name - название поля, которое надо отредактировать, field_value - значение для изменения поля
+# Редактирование полей пользовательской анкеты. field_name - название поля,
+# которое надо отредактировать, field_value - значение для изменения поля
 def edit_profile(telegram_id, field_name, field_value):
-    res = put(SERVER + '/users/' + str(telegram_id), headers={'password': SECRET_PASSWORD}, json={field_name: field_value}).json()
+    res = put(SERVER + '/users/' + str(telegram_id), headers={'password': SECRET_PASSWORD},
+              json={field_name: field_value}).json()
     return res
 
 
@@ -76,8 +80,9 @@ def get_user_from_db(telegram_id):
 # Функция поиска собеседника. Тут осуществляется поиск как по интересам, так и по полу
 def get_companion_telegram_id(telegram_id, type_dialog, search_gender=''):
     if search_gender:
-        telegram_id_friend = post(SERVER + '/search_dialog', headers={'password': SECRET_PASSWORD}, json={'telegram_id': str(telegram_id), 'type_dialog': type_dialog,
-                                                                                                          'search_gender': search_gender})
+        telegram_id_friend = post(SERVER + '/search_dialog', headers={'password': SECRET_PASSWORD},
+                                  json={'telegram_id': str(telegram_id), 'type_dialog': type_dialog,
+                                        'search_gender': search_gender})
     else:
         telegram_id_friend = post(SERVER + '/search_dialog', headers={'password': SECRET_PASSWORD},
                                   json={'telegram_id': str(telegram_id), 'type_dialog': type_dialog})
@@ -87,11 +92,13 @@ def get_companion_telegram_id(telegram_id, type_dialog, search_gender=''):
 # Функция прерывания диалога между двумя пользователями
 def stop_dialog(telegram_id1, telegram_id2):
     stop = post(SERVER + '/search_dialog', headers={'password': SECRET_PASSWORD},
-                json={'telegram_id': str(telegram_id1), 'telegram_id_companion': str(telegram_id2), 'type_dialog': 'stop_dialog'})
+                json={'telegram_id': str(telegram_id1), 'telegram_id_companion': str(telegram_id2),
+                      'type_dialog': 'stop_dialog'})
     return stop.json()
 
 
-# Функция поиска собеседника. Не важно, по интересам или по полу. Эти параметры передаются в type_dialog. Вынес это в отдельную функцию, т.к. иначе бы код дублировался три раза:
+# Функция поиска собеседника. Не важно, по интересам или по полу. Эти параметры передаются в type_dialog.
+# Вынес это в отдельную функцию, т.к. иначе бы код дублировался три раза:
 # /search_interests, /search_male и /search_female
 def search_user(message, type_dialog, error_message):
     if not is_user_in_db(message.from_user.id):
@@ -106,9 +113,11 @@ def search_user(message, type_dialog, error_message):
     if type_dialog == 'search_interests_dialog':
         telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_interests_dialog').json()
     elif type_dialog == 'search_male_dialog':
-        telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_gender_dialog', search_gender='male').json()
+        telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_gender_dialog',
+                                                       search_gender='male').json()
     elif type_dialog == 'search_female_dialog':
-        telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_gender_dialog', search_gender='female').json()
+        telegram_id_friend = get_companion_telegram_id(user_in_db['telegram_id'], 'search_gender_dialog',
+                                                       search_gender='female').json()
     # print(telegram_id_friend)
     if 'status' in telegram_id_friend and telegram_id_friend['status'] == 'OK' and message.from_user.id not in users:
         mes = 'Собеседник найден. Теперь вы можете начать общаться. Ах, да, вот его анкета:\n\n'
@@ -120,9 +129,11 @@ def search_user(message, type_dialog, error_message):
         user_count = get_user_from_db(message.from_user.id)['count_photos']
         get_user_photos(message.from_user.id, int(user_count))
         if len(users[message.from_user.id]['photos']) >= 2:  # Если фоток больше двух - то отправляем альбомом
-            bot.send_media_group(int(telegram_id_friend['telegram_id_suitable_user']), users[message.from_user.id]['photos'])
+            bot.send_media_group(int(telegram_id_friend['telegram_id_suitable_user']),
+                                 users[message.from_user.id]['photos'])
         elif len(users[message.from_user.id]['photos']) == 1:
-            bot.send_photo(int(telegram_id_friend['telegram_id_suitable_user']), users[message.from_user.id]['photos'][0])  # Если фотка одна - то просто отправкой фотки
+            bot.send_photo(int(telegram_id_friend['telegram_id_suitable_user']),
+                           users[message.from_user.id]['photos'][0])  # Если фотка одна - то просто отправкой фотки
         del users[message.from_user.id]['photos']
 
         bot.send_audio(int(telegram_id_friend['telegram_id_suitable_user']), message.audio.file_id)
@@ -132,14 +143,21 @@ def search_user(message, type_dialog, error_message):
         companion_profile = get_user_from_db(telegram_id_friend['telegram_id_suitable_user'])
         user_count = get_user_from_db(telegram_id_friend['telegram_id_suitable_user'])['count_photos']
         get_user_photos(int(telegram_id_friend['telegram_id_suitable_user']), int(user_count))
-        if len(users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos']) >= 2:  # Если фоток больше двух - то отправляем альбомом
-            bot.send_media_group(message.from_user.id, users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos'], mes + render_profile(companion_profile))
-        elif len(users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos']) == 1:  # Если фотка одна - то просто отправкой фотки
-            bot.send_photo(message.from_user.id, users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos'][0], mes + render_profile(companion_profile))
+        if len(users[int(telegram_id_friend['telegram_id_suitable_user'])][
+                   'photos']) >= 2:  # Если фоток больше двух - то отправляем альбомом
+            bot.send_media_group(message.from_user.id,
+                                 users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos'],
+                                 mes + render_profile(companion_profile))
+        elif len(users[int(telegram_id_friend['telegram_id_suitable_user'])][
+                     'photos']) == 1:  # Если фотка одна - то просто отправкой фотки
+            bot.send_photo(message.from_user.id,
+                           users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos'][0],
+                           mes + render_profile(companion_profile))
         del users[int(telegram_id_friend['telegram_id_suitable_user'])]['photos']
         bot.send_message(message.from_user.id, mes + render_profile(companion_profile))
     # Если пользователь уже в диалоге(такое может быть, и сервер за этим следит), то ничего не делаем.
-    elif telegram_id_friend['status'] == 'user in dialog' or (message.from_user.id in users and 'dialog' in users[message.from_user.id]):
+    elif telegram_id_friend['status'] == 'user in dialog' or (
+            message.from_user.id in users and 'dialog' in users[message.from_user.id]):
         # Пользователь получит сообщение о том, что он в диалоге от другого пользователя
         pass
     else:
@@ -183,7 +201,8 @@ def profile_start(message):
         bot.send_message(message.from_user.id, 'Вам недоступна эта команда')
         return
     if is_user_in_db(message.from_user.id):
-        bot.send_message(message.from_user.id, 'Ваша анкета была добавлена ранее. Вы можете отредактировать ее - /edit_profile')
+        bot.send_message(message.from_user.id,
+                         'Ваша анкета была добавлена ранее. Вы можете отредактировать ее - /edit_profile')
         return
     keyboard_hider = types.ReplyKeyboardRemove()
     bot.send_message(message.from_user.id, "Как вас зовут?", reply_markup=keyboard_hider)
@@ -203,7 +222,8 @@ def search_interests(message):
 @bot.message_handler(commands=['search_male'])
 def search_male(message):
     error_message = 'Увы, но на данный момент собеседников с выбранным полом нет. Попробуйте поискать позже, ' \
-                    'или же можете попробовать поискать собеседника по интересам или по другому полу - (/search_interests или /search_female)'
+                    'или же можете попробовать поискать собеседника по интересам или по другому полу - ' \
+                    '(/search_interests или /search_female)'
     search_companion = search_user(message, 'search_male_dialog', error_message)
     print(search_companion)
     print(users)
@@ -223,7 +243,8 @@ def search_female(message):
 @bot.message_handler(commands=['edit_profile'])
 def edit_prof(message):
     if message.from_user.id in users and 'dialog' in users[message.from_user.id]:
-        bot.send_message(message.from_user.id, "Вы не может отредактировать профиль во время диалога. Что бы выйти из него - /stop_dialog!")
+        bot.send_message(message.from_user.id,
+                         "Вы не может отредактировать профиль во время диалога. Что бы выйти из него - /stop_dialog!")
     if is_user_in_db(message.from_user.id):
         bot.send_message(message.from_user.id, "Что вы хотите изменить:", reply_markup=EDIT_PROFILE_KEYBOARD)
         bot.register_next_step_handler(message, check_answer)
@@ -281,10 +302,12 @@ def edit_prof(message):
 def stop_dial(message):
     if message.from_user.id in users and 'dialog' in users[message.from_user.id]:
         stop_dialog(message.from_user.id, users[message.from_user.id]['dialog'])
-        bot.send_message(message.from_user.id, 'Диалог остановлен. Чтобы начать поиск по интересам заново, напишите - /search_interests.'
-                                               ' Или можете найти собеседника по полу - (/search_male или /search_female)')
-        bot.send_message(users[message.from_user.id]['dialog'], 'Диалог остановлен. Чтобы начать поиск по интересам заново, напишите - /search_interests.'
-                                                                ' Или можете найти собеседника по полу - (/search_male или /search_female)')
+        bot.send_message(message.from_user.id,
+                         'Диалог остановлен. Чтобы начать поиск по интересам заново, напишите - /search_interests.'
+                         ' Или можете найти собеседника по полу - (/search_male или /search_female)')
+        bot.send_message(users[message.from_user.id]['dialog'],
+                         'Диалог остановлен. Чтобы начать поиск по интересам заново, напишите - /search_interests.'
+                         ' Или можете найти собеседника по полу - (/search_male или /search_female)')
         del users[users[message.from_user.id]['dialog']]
         del users[message.from_user.id]
         print(users)
@@ -327,7 +350,8 @@ def profile_stop_photos(message):
     bot.send_message(message.from_user.id, 'Ваша анкета успешно добавлена, ура!', reply_markup=keyboard_hider)
 
 
-@bot.message_handler(content_types=["text", "sticker", "pinned_message", "photo", "audio", "voice", 'video', 'video_note'])
+@bot.message_handler(
+    content_types=["text", "sticker", "pinned_message", "photo", "audio", "voice", 'video', 'video_note'])
 # 1 ПУНКТ ЗАДАНИЯ
 def profile_pre_start(message):
     if is_user_in_db(message.from_user.id) is True:
@@ -352,8 +376,9 @@ def profile_pre_start(message):
                 print(message.video_note)
                 bot.send_video_note(id_friend, message.video_note.file_id)
         else:
-            bot.send_message(message.from_user.id, 'Для начала вам нужно написать /search_interests, чтобы найти собеседника со схожими с вашими интересами. '
-                                                   'Или же можете найти собеседника по полу - (/search_male или /search_female)')
+            bot.send_message(message.from_user.id,
+                             'Для начала вам нужно написать /search_interests, чтобы найти собеседника со схожими с вашими интересами. '
+                             'Или же можете найти собеседника по полу - (/search_male или /search_female)')
     else:
         bot.send_message(message.from_user.id, 'Сначала нужно зарегистрировать анкету (/reg - для регистрации)')
 
@@ -454,8 +479,9 @@ def profile_get_about_partner(message):
     print(users)
     keyboard = types.ReplyKeyboardMarkup(row_width=2)
     keyboard.add(types.KeyboardButton('/skip_photos'), types.KeyboardButton('/stop_photos'))
-    bot.send_message(message.from_user.id, 'Ваши фотографии? (Максимум 4). Если вы не хотите добавлять фотографии, напишите /skip_photos \n Если вы добавили нужные вам фотографии,'
-                                           'напишите /stop_photos', reply_markup=keyboard)
+    bot.send_message(message.from_user.id,
+                     'Ваши фотографии? (Максимум 4). Если вы не хотите добавлять фотографии, напишите /skip_photos \n '
+                     'Если вы добавили нужные вам фотографии, напишите /stop_photos', reply_markup=keyboard)
     bot.register_next_step_handler(message, profile_get_photos)
     users[message.from_user.id]['photos'] = []
 
@@ -469,12 +495,16 @@ def profile_get_photos(message):
         if len(users[message.from_user.id]['photos']) <= 3:
             users[message.from_user.id]['photos'].append(downloaded_file)
             if len(users[message.from_user.id]['photos']) > 3:
-                bot.send_message(message.from_user.id, 'Вы успешно добавили 4 фотографии. Ваша анкета зарегистрирована!', reply_markup=keyboard_hider)
+                bot.send_message(message.from_user.id,
+                                 'Вы успешно добавили 4 фотографии. Ваша анкета зарегистрирована!',
+                                 reply_markup=keyboard_hider)
                 register_user(users[message.from_user.id])
                 return
-            bot.send_message(message.from_user.id, 'Фото номер ' + str(len(users[message.from_user.id]['photos'])) + ' добавлено')
+            bot.send_message(message.from_user.id,
+                             'Фото номер ' + str(len(users[message.from_user.id]['photos'])) + ' добавлено')
         else:
-            bot.send_message(message.from_user.id, '4 первые фотографии были добавлены, но больше вы уже добавить не можете!')
+            bot.send_message(message.from_user.id,
+                             '4 первые фотографии были добавлены, но больше вы уже добавить не можете!')
         bot.register_next_step_handler(message, profile_get_photos)
         print(len(users[message.from_user.id]['photos']))
 
@@ -482,14 +512,16 @@ def profile_get_photos(message):
         btn_photo = message.text.lower().lstrip().rstrip()
         print(btn_photo)
         if btn_photo == '/skip_photos':
-            bot.send_message(message.from_user.id, 'Вы ещё можете добавить фотографии в любой момент, используя команду /edit_profile',
+            bot.send_message(message.from_user.id,
+                             'Вы ещё можете добавить фотографии в любой момент, используя команду /edit_profile',
                              reply_markup=keyboard_hider)
             register_user(users[message.from_user.id])
             return
             # bot.register_next_step_handler(message, следующая функция)
         elif btn_photo == '/stop_photos':
             if len(users[message.from_user.id]['photos']) >= 1:
-                bot.send_message(message.from_user.id, 'Вы ещё можете пополнить фотографии вашего профиля в любой момент, используя команду /edit_profile',
+                bot.send_message(message.from_user.id,
+                                 'Вы ещё можете пополнить фотографии вашего профиля в любой момент, используя команду /edit_profile',
                                  reply_markup=keyboard_hider)
                 register_user(users[message.from_user.id])
                 return
@@ -529,7 +561,8 @@ def check_answer(message):
         bot.send_message(message.from_user.id, "Изменение пункта \"о собеседнике\":", reply_markup=keyboard_hider)
         bot.register_next_step_handler(message, check_answer_about_you)
     elif command == 'интересы':
-        bot.send_message(message.from_user.id, "Новые интересы (предыдущие будут удалены):", reply_markup=keyboard_hider)
+        bot.send_message(message.from_user.id, "Новые интересы (предыдущие будут удалены):",
+                         reply_markup=keyboard_hider)
         bot.register_next_step_handler(message, check_answer_interests)
     elif command == 'фото':
         keyboard = types.ReplyKeyboardMarkup(row_width=2)
@@ -537,7 +570,8 @@ def check_answer(message):
         users[message.from_user.id] = {}
         users[message.from_user.id]['photos'] = []
         bot.send_message(message.from_user.id,
-                         'Новые фотографии (Максимум 4). Предыдущие будут удалены. Начать добавление фотографий?', reply_markup=keyboard)
+                         'Новые фотографии (Максимум 4). Предыдущие будут удалены. Начать добавление фотографий?',
+                         reply_markup=keyboard)
         bot.register_next_step_handler(message, check_answer_photo)
     elif command == 'прекратить редактировние':
         bot.send_message(message.from_user.id, "Прекращение редактировния", reply_markup=keyboard_hider)
@@ -559,13 +593,17 @@ def check_answer_photo(message):
         if len(users[message.from_user.id]['photos']) <= 3:
             users[message.from_user.id]['photos'].append(downloaded_file)
             if len(users[message.from_user.id]['photos']) > 3:
-                bot.send_message(message.from_user.id, 'Вы успешно добавили 4 фотографии. Фотографии успешно отредактированы!', reply_markup=EDIT_PROFILE_KEYBOARD)
+                bot.send_message(message.from_user.id,
+                                 'Вы успешно добавили 4 фотографии. Фотографии успешно отредактированы!',
+                                 reply_markup=EDIT_PROFILE_KEYBOARD)
                 register_user(users[message.from_user.id])
                 bot.register_next_step_handler(message, check_answer)
                 return
-            bot.send_message(message.from_user.id, 'Фото номер ' + str(len(users[message.from_user.id]['photos'])) + ' добавлено')
+            bot.send_message(message.from_user.id,
+                             'Фото номер ' + str(len(users[message.from_user.id]['photos'])) + ' добавлено')
         else:
-            bot.send_message(message.from_user.id, '4 первые фотографии были добавлены, но больше вы добавить не можете.')
+            bot.send_message(message.from_user.id,
+                             '4 первые фотографии были добавлены, но больше вы добавить не можете.')
         bot.register_next_step_handler(message, check_answer_photo)
         print(len(users[message.from_user.id]['photos']))
     except Exception as e:
@@ -577,20 +615,23 @@ def check_answer_photo(message):
             users[message.from_user.id]['photos'] = []
             # <Тут должна быть строчка с удалением фотографий на сервере. Пока в апи нет такой возможности, но вскоре она будет>
             print(delete(SERVER_API_URL + '/' + str(message.from_user.id), headers={'password': SECRET_PASSWORD}))
-            bot.send_message(message.from_user.id, 'Начинайте добавлять фотографии (предыдущие удалены). Если вы не хотите добавлять фотографии, напишите /skip_photos \n '
-                                                   'Если вы уже добавили нужные вам фотографии, напишите /stop_photos', reply_markup=keyboard)
+            bot.send_message(message.from_user.id,
+                             'Начинайте добавлять фотографии (предыдущие удалены). Если вы не хотите добавлять фотографии, напишите /skip_photos \n '
+                             'Если вы уже добавили нужные вам фотографии, напишите /stop_photos', reply_markup=keyboard)
             bot.register_next_step_handler(message, check_answer_photo)
         elif command == 'нет':
             bot.send_message(message.from_user.id, 'Нет так нет', reply_markup=EDIT_PROFILE_KEYBOARD)
             bot.register_next_step_handler(message, check_answer)
         elif command == '/skip_photos':
-            bot.send_message(message.from_user.id, 'Вы ещё можете добавить фотографии в любой момент, используя команду /edit_profile',
+            bot.send_message(message.from_user.id,
+                             'Вы ещё можете добавить фотографии в любой момент, используя команду /edit_profile',
                              reply_markup=EDIT_PROFILE_KEYBOARD)
             users[message.from_user.id]['photos'] = []
             bot.register_next_step_handler(message, check_answer)
         elif command == '/stop_photos':
             if len(users[message.from_user.id]['photos']) >= 1:
-                bot.send_message(message.from_user.id, 'Вы ещё можете добавить фотографии в любой момент, используя команду /edit_profile',
+                bot.send_message(message.from_user.id,
+                                 'Вы ещё можете добавить фотографии в любой момент, используя команду /edit_profile',
                                  reply_markup=EDIT_PROFILE_KEYBOARD)
                 register_user(users[message.from_user.id])
                 bot.register_next_step_handler(message, check_answer)
@@ -673,7 +714,8 @@ def check_answer_about_you(message):
         bot.register_next_step_handler(message, check_answer_about_you)
         return check_answer_about_you
     edit_profile(message.from_user.id, 'about_you', message.text)
-    bot.send_message(message.from_user.id, 'Пункт "о желаемом собеседнике" успешно изменен', reply_markup=EDIT_PROFILE_KEYBOARD)
+    bot.send_message(message.from_user.id, 'Пункт "о желаемом собеседнике" успешно изменен',
+                     reply_markup=EDIT_PROFILE_KEYBOARD)
     bot.register_next_step_handler(message, check_answer)
 
 
@@ -715,7 +757,8 @@ def register_user(user):
         for key, value in user.items():
             if key != 'photos':
                 new_user[key] = value
-        print('Добавление пользователя:', post(SERVER_API_URL, headers={'password': SECRET_PASSWORD}, json=new_user).json())
+        print('Добавление пользователя:',
+              post(SERVER_API_URL, headers={'password': SECRET_PASSWORD}, json=new_user).json())
     if user['photos']:  # Если у пользователя есть фотографии, то добавляем их
         asyncio.run(add_user_photos(user['telegram_id'], user['photos']))
 
