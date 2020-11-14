@@ -3,7 +3,7 @@ import telebot
 from requests import get, post, put, delete
 from telebot import types
 
-token = '797488097:AAFIilpcv61tuQ7kFDtZHZyuPpcE8KuSI88'
+token = '1229119097:AAFSUpriVsgGehJKo2agdNSew7bD8-X9jfE'
 SECRET_PASSWORD = 'yEChQDWrLCXg3zQPvJeEuY25e3EOn0'
 SERVER_API_URL = 'http://puparass.pythonanywhere.com/api/users'
 SERVER = 'http://puparass.pythonanywhere.com/api'
@@ -205,8 +205,8 @@ def profile_start(message):
                          'Ваша анкета была добавлена ранее. Вы можете отредактировать ее - /edit_profile')
         return
     keyboard_hider = types.ReplyKeyboardRemove()
-    bot.send_message(message.from_user.id, "Как вас зовут?", reply_markup=keyboard_hider)
-    bot.register_next_step_handler(message, profile_get_name)
+    bot.send_message(message.from_user.id, "Сколько тебе лет?", reply_markup=keyboard_hider)
+    bot.register_next_step_handler(message, profile_get_age)
 
 
 # Команда поиска собеседника по интересам
@@ -377,28 +377,18 @@ def profile_pre_start(message):
                 bot.send_video_note(id_friend, message.video_note.file_id)
         else:
             bot.send_message(message.from_user.id,
-                             'Для начала вам нужно написать /search_interests, чтобы найти собеседника со схожими с вашими интересами. '
+                             'Для начала вам нужно написать /search_interests, чтобы найти собеседника со схожими с '
+                             'вашими интересами. '
                              'Или же можете найти собеседника по полу - (/search_male или /search_female)')
     else:
         bot.send_message(message.from_user.id, 'Сначала нужно зарегистрировать анкету (/reg - для регистрации)')
 
 
 @bot.message_handler(content_types=['text'])
-def profile_get_name(message):
-    if len(message.text) >= 50:
-        bot.send_message(message.from_user.id, 'Никнейм не может превышать 50 символов')
-        bot.register_next_step_handler(message, profile_get_name)
-        return
+def profile_get_age(message):
     users[message.from_user.id] = {}
     users[message.from_user.id]['telegram_id'] = message.from_user.id
-    users[message.from_user.id]['name'] = message.text
     print(users)
-    bot.send_message(message.from_user.id, 'Сколько вам лет?')
-    bot.register_next_step_handler(message, profile_get_age)
-
-
-@bot.message_handler(content_types=['text'])
-def profile_get_age(message):
     try:
         if int(message.text) >= 70 or int(message.text) <= 10:
             bot.send_message(message.from_user.id, 'Введите ваш настоящий возраст')
@@ -412,9 +402,9 @@ def profile_get_age(message):
         return
 
     # <buttons>
-    keyboard = types.ReplyKeyboardMarkup(row_width=2)
+    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     keyboard.add(types.KeyboardButton('Мужской'), types.KeyboardButton('Женский'))
-    bot.send_message(message.from_user.id, "Какой у вас пол?", reply_markup=keyboard)
+    bot.send_message(message.from_user.id, "Теперь определимся с полом", reply_markup=keyboard)
     types.ReplyKeyboardRemove(selective=False)
     # </buttons>
 
@@ -435,10 +425,78 @@ def profile_get_sex(message):
         bot.send_message(message.from_user.id, 'Введите верные данные. Какой у вас пол?')
         bot.register_next_step_handler(message, profile_get_sex)
         return profile_get_sex
-
     print(users)
-    keyboard_hider = types.ReplyKeyboardRemove()
-    bot.send_message(message.from_user.id, 'Ваши интересы? (Через запятую)', reply_markup=keyboard_hider)
+
+    # <buttons>
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    item_girls = types.KeyboardButton('Девушек')
+    item_men = types.KeyboardButton('Парней')
+    item_all = types.KeyboardButton('Без разницы')
+    markup.row(item_girls, item_men)
+    markup.row(item_all)
+    bot.send_message(message.from_user.id, "Кого ты ищешь?", reply_markup=markup)
+    # </buttons>
+
+    bot.register_next_step_handler(message, profile_get_gender_to_search)
+
+
+@bot.message_handler(content_types=["text"])
+def profile_get_gender_to_search(message):
+    btn_gts = message.text.lower()
+    if btn_gts == "парней":
+        active_gts = "men"
+        users[message.from_user.id]['to_search'] = active_gts
+    elif btn_gts == "девушек":
+        active_gts = "girls"
+        users[message.from_user.id]['to_search'] = active_gts
+    elif btn_gts == "без разницы":
+        active_gts = "not_important"
+        users[message.from_user.id]['to_search'] = active_gts
+    else:
+        bot.send_message(message.from_user.id, 'Введите верные данные. Кого вы ищете?')
+        bot.register_next_step_handler(message, profile_get_gender_to_search)
+        return profile_get_gender_to_search
+    print(users)
+
+    markup = types.ReplyKeyboardRemove(selective=False)
+
+    bot.send_message(message.from_user.id, "Из какого ты города?", reply_markup=markup)
+    bot.register_next_step_handler(message, profile_get_city)
+
+
+@bot.message_handler(content_types=["text"])
+def profile_get_city(message):
+    users[message.from_user.id]['city'] = message.text
+    print(users)
+    bot.send_message(message.from_user.id, 'Как мне тебя называть?')
+    bot.register_next_step_handler(message, profile_get_name)
+
+
+@bot.message_handler(content_types=['text'])
+def profile_get_name(message):
+    if len(message.text) >= 50:
+        bot.send_message(message.from_user.id, 'Сделай никнейм покороче')
+        bot.register_next_step_handler(message, profile_get_name)
+        return
+    users[message.from_user.id]['name'] = message.text
+    print(users)
+    bot.send_message(message.from_user.id,
+                     'вам предоставляется пространство для творчества. напишите интересный текст, который будет в '
+                     'вашей анкете. заинтересуйте людей, которые его увидят!?')
+    bot.register_next_step_handler(message, profile_short_inf)
+
+
+@bot.message_handler(content_types=['text'])
+def profile_short_inf(message):
+    if len(message.text) >= 1000:
+        bot.send_message(message.from_user.id, 'Длина текста не может превышать 1000 символов')
+        bot.register_next_step_handler(message, profile_short_inf)
+        return profile_short_inf
+    users[message.from_user.id]['short_inf'] = message.text
+    print(users)
+    bot.send_message(message.from_user.id,
+                     'Теперь вы можете добавить категории для поиска. Например "чтение, рисование, игры, фильмы, '
+                     'сериалы, спорт, футбол, волейбол, ютуб, тикток, фотографии, дизайн"')
     bot.register_next_step_handler(message, profile_get_interests)
 
 
@@ -451,33 +509,10 @@ def profile_get_interests(message):
             bot.send_message(message.from_user.id, 'Длина одного из интересов не может превышать 256 символов!')
             bot.register_next_step_handler(message, profile_get_interests)
             return profile_get_interests
-    users[message.from_user.id]['interests'] = message.text
+    users[message.from_user.id]['interests'] = p_interests
     print(users)
-    bot.send_message(message.from_user.id, 'Расскажите о себе?')
-    bot.register_next_step_handler(message, profile_get_biography)
 
-
-@bot.message_handler(content_types=['text'])
-def profile_get_biography(message):
-    if len(message.text) >= 1000:
-        bot.send_message(message.from_user.id, 'Длина текста не может превышать 1000 символов')
-        bot.register_next_step_handler(message, profile_get_biography)
-        return profile_get_biography
-    users[message.from_user.id]['about_me'] = message.text
-    print(users)
-    bot.send_message(message.from_user.id, 'Расскажите о желаемом собеседнике?')
-    bot.register_next_step_handler(message, profile_get_about_partner)
-
-
-@bot.message_handler(content_types=['text'])
-def profile_get_about_partner(message):
-    if len(message.text) >= 1000:
-        bot.send_message(message.from_user.id, 'Длина текста не может превышать 1000 символов')
-        bot.register_next_step_handler(message, profile_get_about_partner)
-        return profile_get_about_partner
-    users[message.from_user.id]['about_you'] = message.text
-    print(users)
-    keyboard = types.ReplyKeyboardMarkup(row_width=2)
+    keyboard = types.ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     keyboard.add(types.KeyboardButton('/skip_photos'), types.KeyboardButton('/stop_photos'))
     bot.send_message(message.from_user.id,
                      'Ваши фотографии? (Максимум 4). Если вы не хотите добавлять фотографии, напишите /skip_photos \n '
