@@ -25,7 +25,8 @@ EDIT_PROFILE_KEYBOARD.row(item_button4, item_button5, item_button6)
 EDIT_PROFILE_KEYBOARD.row(item_button7, item_button8)
 
 
-# Функция проверки, есть ли пользователь в бд или нет. Позже реализую такую функцию на стороне api, пока что мы получаем все данные о пользователе.
+# Функция проверки, есть ли пользователь в бд или нет. Позже реализую такую функцию на стороне api,
+# пока что мы получаем все данные о пользователе.
 # Но эта функция просто будет возвращать боту статус, есть ли пользователь в бд или нет
 def is_user_in_db(telegram_id):
     user_in_db = get(SERVER + '/user_exist/' + str(telegram_id), headers={'password': SECRET_PASSWORD})
@@ -212,7 +213,8 @@ def profile_start(message):
 # Команда поиска собеседника по интересам
 @bot.message_handler(commands=['search_interests'])
 def search_interests(message):
-    error_message = 'Увы, но на данный момент собеседников с подходящими для вас интересами не обнаружилось. Попробуйте поискать позже, ' \
+    error_message = 'Увы, но на данный момент собеседников с подходящими для вас интересами не обнаружилось. ' \
+                    'Попробуйте поискать позже, ' \
                     'изменить интересы или выполнить поиск по полу - (/search_male или /search_female)'
     search_companion = search_user(message, 'search_interests_dialog', error_message)
     print(search_companion)
@@ -233,7 +235,8 @@ def search_male(message):
 @bot.message_handler(commands=['search_female'])
 def search_female(message):
     error_message = 'Увы, но на данный момент собеседников с выбранным полом нет. Попробуйте поискать позже, ' \
-                    'или же можете попробовать поискать собеседника по интересам или по другому полу - (/search_interests или /search_male)'
+                    'или же можете попробовать поискать собеседника по интересам или по другому полу - (' \
+                    '/search_interests или /search_male) '
     search_companion = search_user(message, 'search_female_dialog', error_message)
     print(search_companion)
     print(users)
@@ -556,7 +559,8 @@ def profile_get_photos(message):
         elif btn_photo == '/stop_photos':
             if len(users[message.from_user.id]['photos']) >= 1:
                 bot.send_message(message.from_user.id,
-                                 'Вы ещё можете пополнить фотографии вашего профиля в любой момент, используя команду /edit_profile',
+                                 'Вы ещё можете пополнить фотографии вашего профиля в любой момент, используя команду '
+                                 '/edit_profile',
                                  reply_markup=keyboard_hider)
                 register_user(users[message.from_user.id])
                 return
@@ -610,9 +614,9 @@ def check_answer(message):
         bot.register_next_step_handler(message, check_answer_photo)
     elif command == 'прекратить редактировние':
         bot.send_message(message.from_user.id, "Прекращение редактировния", reply_markup=keyboard_hider)
-        # HELP: Куда эта запупа должна вести?
-        # bot.register_next_step_handler(message, XZ_link(Главная менюшка))
-        # Саси, так и надо оставить, пусть просто убирает клаву, этого достаточно. (Всё равно ты это не прочтешь, а если и зачитаешь, то (1 слово))
+        # HELP: Куда эта запупа должна вести? bot.register_next_step_handler(message, XZ_link(Главная менюшка)) Саси,
+        # так и надо оставить, пусть просто убирает клаву, этого достаточно. (Всё равно ты это не прочтешь,
+        # а если и зачитаешь, то (1 слово))
     else:
         bot.send_message(message.from_user.id, 'Введите одну из доступных команд!')
         return
@@ -622,7 +626,7 @@ def check_answer(message):
 @bot.message_handler(func=lambda message: True, content_types=['photo'])
 def check_answer_photo(message):
     try:
-        keyboard_hider = types.ReplyKeyboardRemove()
+        # keyboard_hider = types.ReplyKeyboardRemove()
         file_info = bot.get_file(message.photo[len(message.photo) - 1].file_id)
         downloaded_file = bot.download_file(file_info.file_path)
         if len(users[message.from_user.id]['photos']) <= 3:
@@ -648,10 +652,12 @@ def check_answer_photo(message):
             keyboard.add(types.KeyboardButton('/skip_photos'), types.KeyboardButton('/stop_photos'))
             users[message.from_user.id] = {'telegram_id': str(message.from_user.id)}
             users[message.from_user.id]['photos'] = []
-            # <Тут должна быть строчка с удалением фотографий на сервере. Пока в апи нет такой возможности, но вскоре она будет>
+            # <Тут должна быть строчка с удалением фотографий на сервере. Пока в апи нет такой возможности,
+            # но вскоре она будет>
             print(delete(SERVER_API_URL + '/' + str(message.from_user.id), headers={'password': SECRET_PASSWORD}))
             bot.send_message(message.from_user.id,
-                             'Начинайте добавлять фотографии (предыдущие удалены). Если вы не хотите добавлять фотографии, напишите /skip_photos \n '
+                             'Начинайте добавлять фотографии (предыдущие удалены). Если вы не хотите добавлять '
+                             'фотографии, напишите /skip_photos \n '
                              'Если вы уже добавили нужные вам фотографии, напишите /stop_photos', reply_markup=keyboard)
             bot.register_next_step_handler(message, check_answer_photo)
         elif command == 'нет':
