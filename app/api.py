@@ -40,7 +40,6 @@ class UserApi(Resource):
     parser.add_argument('age', required=False)
     parser.add_argument('interests', required=False)
     parser.add_argument('about_me', required=False)
-    parser.add_argument('about_you', required=False)
 
     def delete(self, user_id):
         try:
@@ -72,7 +71,6 @@ class UserApi(Resource):
             'count_photos': str(len(user.photos)),
             'telegram_id': str(user.telegram_id),
             'about_me': user.about_me,
-            'about_you': user.about_you,
             'interests': ','.join([text.text for text in user.interests]),
         }
         return jsonify({'user': result})
@@ -145,16 +143,6 @@ class UserApi(Resource):
                 user.about_me = about_mee
                 db.session.commit()
 
-            if args['about_you'] is not None:
-                # Проверка информации о собеседнике
-                try:
-                    about_youu = str(args['about_you'])
-                    if len(about_youu) > 1000:
-                        return jsonify({'error': 'maximum about_you length - 1000 symbols'})
-                except Exception as e:
-                    return jsonify(type_error('about_you', str(type(args['about_you']))))
-                user.about_you = about_youu
-                db.session.commit()
             return jsonify({'success': 'Ok'})
         except Exception as e:
             return jsonify({'error': 'An error occurred'})
@@ -241,7 +229,6 @@ class UserListApi(Resource):
     parser.add_argument('age', required=True)
     parser.add_argument('interests', required=True)
     parser.add_argument('about_me', required=True)
-    parser.add_argument('about_you', required=True)
     parser.add_argument('telegram_id', required=True)
 
     def post(self):
@@ -290,13 +277,6 @@ class UserListApi(Resource):
         except Exception as e:
             return jsonify(type_error('about_me', str(type(args['about_me']))))
 
-        # Проверка информации о собеседнике
-        try:
-            about_you = str(args['about_you'])
-            if len(about_you) > 1000:
-                return jsonify({'error': 'maximum about_you length - 1000 symbols'})
-        except Exception as e:
-            return jsonify(type_error('about_you', str(type(args['about_you']))))
         user = User(name=name, gender=gender, age=age, about_me=about_me, about_you=about_you, telegram_id=telegram_id)
         # Добавление интересов для пользователя
         try:
