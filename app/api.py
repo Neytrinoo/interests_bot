@@ -172,7 +172,8 @@ class UserExist(Resource):
 
 class UserPhotos(Resource):
     parser = reqparse.RequestParser()
-    # number_photo - это номер фотографии, которую мы хотим получить. Т.к. нельзя отправить сразу несколько фотографий, приходится отправлять по одной
+    # number_photo - это номер фотографии, которую мы хотим получить. Т.к. нельзя отправить сразу несколько фотографий,
+    # приходится отправлять по одной
     parser.add_argument('number_photo', required=True)
 
     def get(self, user_id):
@@ -192,22 +193,14 @@ class UserPhotos(Resource):
         return response
 
 
-class UserSearch(Resource):  # Для поиска пользователей для диалога
+class UserSearch(Resource):
     parser = reqparse.RequestParser()
-    # Тип диалога, который ищет пользователь может быть search_interests_dialog, search_gender_dialog и stop_dialog
-    # Для stop_dialog нужно также указать telegram_id_companion - телеграм айди собеседника
-    # search_gender - это гендер, который ищет пользователь. Может быть male и female
-    parser.add_argument('telegram_id', required=True)
-    parser.add_argument('type_dialog', required=True)
-    parser.add_argument('telegram_id_companion', required=False)
-    parser.add_argument('search_gender', required=False)
+    parser.add_argument('telegram_id')
 
     def post(self):
-        # Не зная пароль никто не сможет получить пользователя
         if 'password' not in request.headers:
             abort(400, message='Access error')
         abort_if_password_false(request.headers['password'])
-
         args = self.parser.parse_args()
         try:
             telegram_id = int(args['telegram_id'])
@@ -216,67 +209,29 @@ class UserSearch(Resource):  # Для поиска пользователей д
 
         abort_if_user_not_found(telegram_id)
 
-        if args['type_dialog'] == 'search_interests_dialog':  # Если мы ищем собеседника по интересам
-            start_time = time.time()
-            now_user = User.query.filter_by(telegram_id=telegram_id).first()
-            now_user.status_dialog = 'search_interests_dialog'
-            while time.time() - start_time <= 10:
-                common_interests_with_now_user = {}  # Словарь совпадений интересов с исходным пользователем
-                db.session.commit()
-                now_user_interests = set(now_user.interests)  # Множество интересов исходного пользователя
-                search_dialog_users = User.query.filter_by(status_dialog='search_interests_dialog').all()
-                for user in search_dialog_users:
-                    if user.telegram_id == now_user.telegram_id:
-                        continue
-                    common_interests_with_now_user[user.telegram_id] = len(now_user_interests & set(user.interests))  # Длина пересечения множеств интересов двух пользователей
-                if not common_interests_with_now_user:
-                    continue
-                print(common_interests_with_now_user)
-                suitable_user = sorted(common_interests_with_now_user.items(), key=lambda x: x[1])[-1]  # Пользователь с наибольшим совпадением интересов
-                if User.query.filter_by(telegram_id=telegram_id).first().status_dialog == 'in_dialog':
-                    return jsonify({'status': 'user in dialog', 'message': 'User {} is already in dialog'.format(str(telegram_id))})
-                if suitable_user[-1] != 0 and User.query.filter_by(
-                        telegram_id=suitable_user[0]).first().status_dialog != 'in_dialog':  # Если есть пользователь, с которым совпадает хоть один интерес, и он еще не в диалоге
-                    User.query.filter_by(telegram_id=suitable_user[0]).first().status_dialog = 'in_dialog'
-                    User.query.filter_by(telegram_id=telegram_id).first().status_dialog = 'in_dialog'
-                    db.session.commit()
-                    return jsonify({'status': 'OK', 'telegram_id_suitable_user': suitable_user[0]})
-            if now_user.status_dialog != 'in_dialog':
-                now_user.status_dialog = 'not_in_dialog'
-                db.session.commit()
-            return jsonify({'status': 'not users', 'message': 'The search timed out for 10 seconds. At the moment there are no users with your interests'})
+        user = User.query.filter_by(telegram_id=telegram_id).first()
+        users_with_common_interests = set()  # множество пользователей, с которыми совпали интересы
+        for interest in user.interests:
+            for us in interest.users:
+                if us.id != user.id and us not in user.sight_profiles and (
+                        us.gender == user.sexual_preferences or user.sexual_preferences == 'all'):
+                    users_with_common_interests.add(us)
 
-        elif args['type_dialog'] == 'stop_dialog':  # Если нужно прекратить диалог между двумя пользователями
-            try:
-                telegram_id_companion = int(args['telegram_id_companion'])
-            except Exception as e:
-                return jsonify({'error': 'telegram_id_companion can only contain numbers'})
-            abort_if_user_not_found(telegram_id_companion)
-            User.query.filter_by(telegram_id=telegram_id_companion).first().status_dialog = 'not_in_dialog'
-            db.session.commit()
-            User.query.filter_by(telegram_id=telegram_id).first().status_dialog = 'not_in_dialog'
-            db.session.commit()
-            return jsonify({'status': 'OK', 'message': 'User {} and user {} are not in dialog'.format(args['telegram_id_companion'], args['telegram_id'])})
+        # сортируем пользователей по совпадениям интересов с исходным пользователем
+        users_with_common_interests = sorted(users_with_common_interests, key=lambda usr: set(usr.interests) & set(user.interests))
+        if users_with_common_interests:  # если такой пользователь есть
+            users_with_common_interests = users_with_common_interests[-1]
+        else:
+            for us in User.query.all():  # если нет то берем первого попавшегося
+                if us not in user.sight_profiles and us.id != user.id:
+                    users_with_common_interests = us
+                    break
+            if not users_with_common_interests:  # если мы показали пользователю все возможные анкеты
+                return jsonify({'status': 'error', 'message': 'there are no suitable profiles for this user'})
 
-        elif args['type_dialog'] == 'search_gender_dialog':  # Если пользователь ищет собеседника по полу
-            now_user = User.query.filter_by(telegram_id=telegram_id).first()
-            now_user_status_dialog = 'search_' + args['search_gender'] + '_dialog'
-            now_user.status_dialog = now_user_status_dialog
-            db.session.commit()
-            other_user_search_status = 'search_' + now_user.gender + '_dialog'
-            start_time = time.time()
-            while time.time() - start_time <= 10:
-                also_search_gender_dialog_users = User.query.filter_by(status_dialog=other_user_search_status, gender='male').all()
-                for user in also_search_gender_dialog_users:
-                    if user.status_dialog == other_user_search_status and now_user.status_dialog == now_user_status_dialog:  # Если пользователь все еще ищет диалог и другой
-                        # пользователь ищет пользователя с таким же гендером, как текущий
-                        user.status_dialog = 'in_dialog'
-                        now_user.status_dialog = 'in_dialog'
-                        db.session.commit()
-                        return jsonify({'status': 'OK', 'telegram_id_suitable_user': str(user.telegram_id)})
-                    elif user.status_dialog == 'in_dialog':
-                        return jsonify({'status': 'OK', 'message': 'User is already in dialog'})
-            return jsonify({'status': 'not users', 'message': 'The search timed out for 10 seconds. At the moment there are no male'})
+        user.sight_profiles.append(users_with_common_interests)
+        db.session.commit()
+        return jsonify({'status': 'OK', 'telegram_id_suitable_profile': users_with_common_interests.telegram_id})
 
 
 class UserListApi(Resource):
@@ -367,4 +322,4 @@ api.add_resource(UserApi, '/api/users/<int:user_id>')
 api.add_resource(UserExist, '/api/user_exist/<int:user_id>')
 api.add_resource(UserPhotos, '/api/user_photos/<int:user_id>')
 api.add_resource(UserListApi, '/api/users')
-api.add_resource(UserSearch, '/api/search_dialog')
+api.add_resource(UserSearch, '/api/search_profile')

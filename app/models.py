@@ -2,8 +2,14 @@ from app import db
 
 interests_table = db.Table('interests_user',
                            db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-                           db.Column('interest_id', db.Integer, db.ForeignKey('interests.id'))
-                           )
+                           db.Column('interest_id', db.Integer, db.ForeignKey('interests.id')))
+
+# таблица для отслеживания кому чья анкета была показана
+show_profile = db.Table('show_profile',
+                        # кто видел анкету пользователя
+                        db.Column('showed_profile_id', db.Integer, db.ForeignKey('user.id')),
+                        # чью анкету увидел пользователь
+                        db.Column('sight_profile_id', db.Integer, db.ForeignKey('user.id')))
 
 
 class User(db.Model):
@@ -14,14 +20,10 @@ class User(db.Model):
     age = db.Column(db.Integer)
     interests = db.relationship('Interests', secondary=interests_table, backref=db.backref('users', lazy='dynamic'))
     about_me = db.Column(db.String(1000))
-    # Статус диалога может иметь следующие значения
-    # in_dialog - пользователь в диалоге
-    # not_in_dialog - пользователь не в диалоге и не ищет диалог
-    # search_interests_dialog - пользователь ищет собеседника по интересам,
-    # search_male_dialog - пользователь ищет собеседника мужчину
-    # search_female_dialog - пользователь ищет собеседника женщину
-    status_dialog = db.Column(db.String(50), default='not_in_dialog')
-    about_you = db.Column(db.String(1000))
+    sexual_preferences = db.Column(db.String(7), default='all')  # анкеты какого гендера показывать пользователю: male, female или all
+    sight_profiles = db.relationship('User', secondary=show_profile, primaryjoin=(show_profile.c.showed_profile_id == id),
+                                     secondaryjoin=(show_profile.c.sight_profile_id == id),
+                                     backref=db.backref('showed_profile_id', lazy='dynamic'), lazy='dynamic')
 
 
 class Interests(db.Model):
